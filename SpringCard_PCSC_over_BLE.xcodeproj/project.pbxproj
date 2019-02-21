@@ -1,0 +1,473 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		110AC918221D81F7004201C4 /* SpringCard_PcSc_Like.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 110AC916221D809D004201C4 /* SpringCard_PcSc_Like.framework */; };
+		110AC919221D81F7004201C4 /* SpringCard_PcSc_Like.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 110AC916221D809D004201C4 /* SpringCard_PcSc_Like.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		110AC920221D8402004201C4 /* CryptoSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11AC8E312213077D00EBD036 /* CryptoSwift.framework */; };
+		110AC921221D8402004201C4 /* CryptoSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 11AC8E312213077D00EBD036 /* CryptoSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1116D93D221BEA7000DFE610 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1116D93C221BEA7000DFE610 /* SettingsController.swift */; };
+		112C987C221BF0CA00D996AD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112C987B221BF0CA00D996AD /* Settings.swift */; };
+		11538EA3221C308800F8F740 /* InformationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11538EA2221C308800F8F740 /* InformationTableViewCell.swift */; };
+		11B754B62202EB090095CFD8 /* ApduParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B754B52202EB090095CFD8 /* ApduParser.swift */; };
+		11B754BB220323480095CFD8 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B754BA220323480095CFD8 /* Model.swift */; };
+		11B754BD220324BE0095CFD8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B754BC220324BE0095CFD8 /* Models.swift */; };
+		11EF711D221B24AD005E0FFC /* InformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11EF711C221B24AD005E0FFC /* InformationViewController.swift */; };
+		BD0CDCB321AD9A66008383A4 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD0CDCB221AD9A66008383A4 /* Utilities.swift */; };
+		BD12903121C1538F000F4007 /* PcScScriptorViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD12903021C1538F000F4007 /* PcScScriptorViewCell.swift */; };
+		BD339D2A1F053B73005F9DE4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD339D291F053B73005F9DE4 /* AppDelegate.swift */; };
+		BD339D2C1F053B73005F9DE4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD339D2B1F053B73005F9DE4 /* ViewController.swift */; };
+		BD339D2F1F053B73005F9DE4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BD339D2D1F053B73005F9DE4 /* Main.storyboard */; };
+		BD339D311F053B73005F9DE4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BD339D301F053B73005F9DE4 /* Assets.xcassets */; };
+		BD339D341F053B73005F9DE4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BD339D321F053B73005F9DE4 /* LaunchScreen.storyboard */; };
+		BD98FA37219AE4A000459E98 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98FA36219AE4A000459E98 /* AboutViewController.swift */; };
+		BDB752C42200AD60002925F0 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB752C32200AD60002925F0 /* Enums.swift */; };
+		BDF11162218767DA00885C80 /* ConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF11161218767DA00885C80 /* ConnectViewController.swift */; };
+		BDF9888F2194771500DE79F1 /* MenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF9888E2194771500DE79F1 /* MenuTableViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		110AC915221D809D004201C4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD221F0121BE787700447CD5 /* SpringCard_PcSc_Like.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BD03266121AD88C600682A30;
+			remoteInfo = SpringCard_PcSc_Like;
+		};
+		110AC91A221D81F7004201C4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD221F0121BE787700447CD5 /* SpringCard_PcSc_Like.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BD03266021AD88C600682A30;
+			remoteInfo = SpringCard_PcSc_Like;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BD6A5B2621BFB79B00391EBE /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				110AC919221D81F7004201C4 /* SpringCard_PcSc_Like.framework in Embed Frameworks */,
+				110AC921221D8402004201C4 /* CryptoSwift.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1116D93C221BEA7000DFE610 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
+		112C987B221BF0CA00D996AD /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		11319A54221D865700C8EFB8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		11538EA2221C308800F8F740 /* InformationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationTableViewCell.swift; sourceTree = "<group>"; };
+		11AC8E312213077D00EBD036 /* CryptoSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CryptoSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		11B754B52202EB090095CFD8 /* ApduParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApduParser.swift; sourceTree = "<group>"; };
+		11B754BA220323480095CFD8 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		11B754BC220324BE0095CFD8 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		11D5B8E6221AE7AA00908619 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		11EF711C221B24AD005E0FFC /* InformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationViewController.swift; sourceTree = "<group>"; };
+		BD0CDCB221AD9A66008383A4 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		BD12903021C1538F000F4007 /* PcScScriptorViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PcScScriptorViewCell.swift; sourceTree = "<group>"; };
+		BD221F0121BE787700447CD5 /* SpringCard_PcSc_Like.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SpringCard_PcSc_Like.xcodeproj; path = ../SpringCard.PCSC.ZeroDriver/SpringCard_PcSc_Like.xcodeproj; sourceTree = "<group>"; };
+		BD339D261F053B73005F9DE4 /* SpringCard_PCSC_over_BLE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpringCard_PCSC_over_BLE.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD339D291F053B73005F9DE4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BD339D2B1F053B73005F9DE4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BD339D2E1F053B73005F9DE4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BD339D301F053B73005F9DE4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BD339D331F053B73005F9DE4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BD339D351F053B73005F9DE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BD98FA36219AE4A000459E98 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		BDB752C32200AD60002925F0 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		BDF11161218767DA00885C80 /* ConnectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewController.swift; sourceTree = "<group>"; };
+		BDF9888E2194771500DE79F1 /* MenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuTableViewController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BD339D231F053B73005F9DE4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				110AC918221D81F7004201C4 /* SpringCard_PcSc_Like.framework in Frameworks */,
+				110AC920221D8402004201C4 /* CryptoSwift.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		110AC912221D809D004201C4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				110AC916221D809D004201C4 /* SpringCard_PcSc_Like.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		11AC8E302213077D00EBD036 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				11AC8E312213077D00EBD036 /* CryptoSwift.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BD339D1D1F053B73005F9DE4 = {
+			isa = PBXGroup;
+			children = (
+				BD339D281F053B73005F9DE4 /* SpringCard_PCSC_over_BLE */,
+				BD339D271F053B73005F9DE4 /* Products */,
+				BD221F0121BE787700447CD5 /* SpringCard_PcSc_Like.xcodeproj */,
+				11AC8E302213077D00EBD036 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		BD339D271F053B73005F9DE4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD339D261F053B73005F9DE4 /* SpringCard_PCSC_over_BLE.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BD339D281F053B73005F9DE4 /* SpringCard_PCSC_over_BLE */ = {
+			isa = PBXGroup;
+			children = (
+				11319A54221D865700C8EFB8 /* README.md */,
+				11D5B8E6221AE7AA00908619 /* TODO.md */,
+				BD339D351F053B73005F9DE4 /* Info.plist */,
+				BD98FA36219AE4A000459E98 /* AboutViewController.swift */,
+				11B754B52202EB090095CFD8 /* ApduParser.swift */,
+				BD339D291F053B73005F9DE4 /* AppDelegate.swift */,
+				BDF11161218767DA00885C80 /* ConnectViewController.swift */,
+				BDB752C32200AD60002925F0 /* Enums.swift */,
+				11538EA2221C308800F8F740 /* InformationTableViewCell.swift */,
+				11EF711C221B24AD005E0FFC /* InformationViewController.swift */,
+				BDF9888E2194771500DE79F1 /* MenuTableViewController.swift */,
+				11B754BA220323480095CFD8 /* Model.swift */,
+				11B754BC220324BE0095CFD8 /* Models.swift */,
+				BD12903021C1538F000F4007 /* PcScScriptorViewCell.swift */,
+				112C987B221BF0CA00D996AD /* Settings.swift */,
+				1116D93C221BEA7000DFE610 /* SettingsController.swift */,
+				BD0CDCB221AD9A66008383A4 /* Utilities.swift */,
+				BD339D2B1F053B73005F9DE4 /* ViewController.swift */,
+				BD339D301F053B73005F9DE4 /* Assets.xcassets */,
+				BD339D321F053B73005F9DE4 /* LaunchScreen.storyboard */,
+				BD339D2D1F053B73005F9DE4 /* Main.storyboard */,
+			);
+			path = SpringCard_PCSC_over_BLE;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BD339D251F053B73005F9DE4 /* SpringCard_PCSC_over_BLE */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BD339D381F053B73005F9DE4 /* Build configuration list for PBXNativeTarget "SpringCard_PCSC_over_BLE" */;
+			buildPhases = (
+				BD339D221F053B73005F9DE4 /* Sources */,
+				BD339D231F053B73005F9DE4 /* Frameworks */,
+				BD339D241F053B73005F9DE4 /* Resources */,
+				BD6A5B2621BFB79B00391EBE /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				110AC91B221D81F7004201C4 /* PBXTargetDependency */,
+			);
+			name = SpringCard_PCSC_over_BLE;
+			productName = BleTest;
+			productReference = BD339D261F053B73005F9DE4 /* SpringCard_PCSC_over_BLE.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BD339D1E1F053B73005F9DE4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0830;
+				LastUpgradeCheck = 1000;
+				ORGANIZATIONNAME = proactive;
+				TargetAttributes = {
+					BD339D251F053B73005F9DE4 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = C5UWEUBVAM;
+						LastSwiftMigration = 1000;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = BD339D211F053B73005F9DE4 /* Build configuration list for PBXProject "SpringCard_PCSC_over_BLE" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BD339D1D1F053B73005F9DE4;
+			productRefGroup = BD339D271F053B73005F9DE4 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 110AC912221D809D004201C4 /* Products */;
+					ProjectRef = BD221F0121BE787700447CD5 /* SpringCard_PcSc_Like.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				BD339D251F053B73005F9DE4 /* SpringCard_PCSC_over_BLE */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		110AC916221D809D004201C4 /* SpringCard_PcSc_Like.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SpringCard_PcSc_Like.framework;
+			remoteRef = 110AC915221D809D004201C4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BD339D241F053B73005F9DE4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD339D341F053B73005F9DE4 /* LaunchScreen.storyboard in Resources */,
+				BD339D311F053B73005F9DE4 /* Assets.xcassets in Resources */,
+				BD339D2F1F053B73005F9DE4 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BD339D221F053B73005F9DE4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11B754BD220324BE0095CFD8 /* Models.swift in Sources */,
+				1116D93D221BEA7000DFE610 /* SettingsController.swift in Sources */,
+				BD98FA37219AE4A000459E98 /* AboutViewController.swift in Sources */,
+				11B754B62202EB090095CFD8 /* ApduParser.swift in Sources */,
+				112C987C221BF0CA00D996AD /* Settings.swift in Sources */,
+				BD339D2C1F053B73005F9DE4 /* ViewController.swift in Sources */,
+				BD0CDCB321AD9A66008383A4 /* Utilities.swift in Sources */,
+				BDF9888F2194771500DE79F1 /* MenuTableViewController.swift in Sources */,
+				BD339D2A1F053B73005F9DE4 /* AppDelegate.swift in Sources */,
+				BDF11162218767DA00885C80 /* ConnectViewController.swift in Sources */,
+				BDB752C42200AD60002925F0 /* Enums.swift in Sources */,
+				BD12903121C1538F000F4007 /* PcScScriptorViewCell.swift in Sources */,
+				11538EA3221C308800F8F740 /* InformationTableViewCell.swift in Sources */,
+				11B754BB220323480095CFD8 /* Model.swift in Sources */,
+				11EF711D221B24AD005E0FFC /* InformationViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		110AC91B221D81F7004201C4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SpringCard_PcSc_Like;
+			targetProxy = 110AC91A221D81F7004201C4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BD339D2D1F053B73005F9DE4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD339D2E1F053B73005F9DE4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BD339D321F053B73005F9DE4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BD339D331F053B73005F9DE4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BD339D361F053B73005F9DE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BD339D371F053B73005F9DE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BD339D391F053B73005F9DE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = C5UWEUBVAM;
+				INFOPLIST_FILE = "$(SRCROOT)/SpringCard_PCSC_over_BLE/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.springcard.pcsclike.sample.ble;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		BD339D3A1F053B73005F9DE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = C5UWEUBVAM;
+				INFOPLIST_FILE = "$(SRCROOT)/SpringCard_PCSC_over_BLE/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.springcard.pcsclike.sample.ble;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BD339D211F053B73005F9DE4 /* Build configuration list for PBXProject "SpringCard_PCSC_over_BLE" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD339D361F053B73005F9DE4 /* Debug */,
+				BD339D371F053B73005F9DE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BD339D381F053B73005F9DE4 /* Build configuration list for PBXNativeTarget "SpringCard_PCSC_over_BLE" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD339D391F053B73005F9DE4 /* Debug */,
+				BD339D3A1F053B73005F9DE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BD339D1E1F053B73005F9DE4 /* Project object */;
+}
