@@ -17,6 +17,8 @@
 		11B754B62202EB090095CFD8 /* ApduParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B754B52202EB090095CFD8 /* ApduParser.swift */; };
 		11B754BB220323480095CFD8 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B754BA220323480095CFD8 /* Model.swift */; };
 		11B754BD220324BE0095CFD8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B754BC220324BE0095CFD8 /* Models.swift */; };
+		11DAC63B22204BFF00B33480 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DAC63A22204BFF00B33480 /* Log.swift */; };
+		11DAC63D2220557000B33480 /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DAC63C2220557000B33480 /* LogViewController.swift */; };
 		11EF711D221B24AD005E0FFC /* InformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11EF711C221B24AD005E0FFC /* InformationViewController.swift */; };
 		BD0CDCB321AD9A66008383A4 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD0CDCB221AD9A66008383A4 /* Utilities.swift */; };
 		BD12903121C1538F000F4007 /* PcScScriptorViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD12903021C1538F000F4007 /* PcScScriptorViewCell.swift */; };
@@ -73,6 +75,8 @@
 		11B754BA220323480095CFD8 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		11B754BC220324BE0095CFD8 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		11D5B8E6221AE7AA00908619 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		11DAC63A22204BFF00B33480 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		11DAC63C2220557000B33480 /* LogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		11EF711C221B24AD005E0FFC /* InformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationViewController.swift; sourceTree = "<group>"; };
 		BD0CDCB221AD9A66008383A4 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		BD12903021C1538F000F4007 /* PcScScriptorViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PcScScriptorViewCell.swift; sourceTree = "<group>"; };
@@ -150,6 +154,8 @@
 				BDB752C32200AD60002925F0 /* Enums.swift */,
 				11538EA2221C308800F8F740 /* InformationTableViewCell.swift */,
 				11EF711C221B24AD005E0FFC /* InformationViewController.swift */,
+				11DAC63A22204BFF00B33480 /* Log.swift */,
+				11DAC63C2220557000B33480 /* LogViewController.swift */,
 				BDF9888E2194771500DE79F1 /* MenuTableViewController.swift */,
 				11B754BA220323480095CFD8 /* Model.swift */,
 				11B754BC220324BE0095CFD8 /* Models.swift */,
@@ -263,8 +269,10 @@
 				11B754B62202EB090095CFD8 /* ApduParser.swift in Sources */,
 				112C987C221BF0CA00D996AD /* Settings.swift in Sources */,
 				BD339D2C1F053B73005F9DE4 /* ViewController.swift in Sources */,
+				11DAC63B22204BFF00B33480 /* Log.swift in Sources */,
 				BD0CDCB321AD9A66008383A4 /* Utilities.swift in Sources */,
 				BDF9888F2194771500DE79F1 /* MenuTableViewController.swift in Sources */,
+				11DAC63D2220557000B33480 /* LogViewController.swift in Sources */,
 				BD339D2A1F053B73005F9DE4 /* AppDelegate.swift in Sources */,
 				BDF11162218767DA00885C80 /* ConnectViewController.swift in Sources */,
 				BDB752C42200AD60002925F0 /* Enums.swift in Sources */,

@@ -20,7 +20,7 @@ extension Collection where Element == Byte {
 
 class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate, SCardReaderListDelegate {
     
-    public var device : CBPeripheral?
+    public var device: CBPeripheral?
     public var advertisingServices: [CBUUID] = []
     public var centralManager: CBCentralManager!
     private var readers: SCardReaderList!
@@ -29,6 +29,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     private var selectedSlotIndex = 0
     private var selectedSlotName = ""
     private var settings = Settings()
+    private var log: Log!
+    private var debugExchanges = true
     
     private var models = Models()
     
@@ -52,6 +54,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     @IBOutlet weak var iccPowerButton: UIButton!
     @IBOutlet weak var slotButton: UIButton!
     @IBOutlet weak var infoButton: UIButton!
+    @IBOutlet weak var responseLabel: UILabel!
     // *************************************************************
     
     // Internal state **********************************************
@@ -78,6 +81,10 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        rapdu.text = ""
+        debugExchanges = settings.get(key: "debugExchanges")
+        self.log = Log.getInstance()
+        Utilities.log = self.log
         infoButton.isEnabled = false
         Utilities.showPleaseWait(on: self)
         centralManager.delegate = self
@@ -86,8 +93,27 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         deviceTitle.title = device?.name ?? "no device name"
         setConnectionStateLabel("Connecting")
         setRapduCapduLookAndFeel()
+        addGestures()
+        rapdu.text = ""
     }
     
+    private func addGestures() {
+        let tapOnResponse = UITapGestureRecognizer(target: self, action: #selector(ConnectViewController.tapOnResponseLabel))
+        responseLabel.isUserInteractionEnabled = true
+        responseLabel.addGestureRecognizer(tapOnResponse)
+        
+        let tapOnView = UITapGestureRecognizer(target: self, action: #selector(ConnectViewController.dismissKeyboard))
+        view.addGestureRecognizer(tapOnView)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    @objc func tapOnResponseLabel(sender:UITapGestureRecognizer) {
+        rapdu.text = ""
+    }
+
     private func getSecureConnectionParameters() -> SecureConnectionParameters? {
         if !settings.get(key: "useSecureCommunication") {
             return nil
@@ -112,9 +138,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        NSLog("ConnectViewController:centralManagerDidUpdateState")
         if central.state != CBManagerState.poweredOn {
-            Utilities.hidePleaseWait(on: self)
+            //Utilities.hidePleaseWait(on: self)
             Utilities.showOkMessageBox(on: self, message: "Please activate Bluetooth", title: "Error")
             goBack()
         }
@@ -122,9 +147,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     override func willMove(toParent parent: UIViewController?) {
         super.willMove(toParent: parent)
-        NSLog("ConnectViewController:willMove()")
         if isConnected {
-            NSLog("ConnectViewController:*** Ask for disconnecting ***")
+            log.add("Ask for disconnecting")
             if self.readers != nil {
                 self.readers.close(keepBleActive: false)
             }
@@ -221,7 +245,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func setRapdu(text: String) {
-        self.rapdu.text = text
+        self.rapdu.text += text + "\n"
     }
     
     func setRapdu(bytes: [UInt8]) {
@@ -286,29 +310,33 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         translateState = !translateState
         if translateState { // To ASCII
             rapduBackup = rapdu.text
-            setRapdu(text: Utilities.HexStringToAscii(rapduBackup))
+            rapdu.text = Utilities.HexStringToAscii(rapduBackup)
         } else { // Back to hex
-            setRapdu(text: rapduBackup)
+            rapdu.text = rapduBackup
         }
     }
     
     @IBAction func onPreviousApduClick(_ sender: Any) {
-        NSLog("ConnectViewController:onPreviousApduClick()")
         // TODO
     }
     
     @IBAction func onNextApduClick(_ sender: Any) {
-        NSLog("ConnectViewController:onNextApduClick()")
         // TODO
     }
     
     @IBAction func onCopyClick(_ sender: Any) {
-        UIPasteboard.general.string = rapdu.text
+        let content = rapdu.text ?? ""
+        let items = [content]
+        let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        present(ac, animated: true)
+        if let popOver = ac.popoverPresentationController {
+            popOver.sourceView = self.view
+        }
     }
     
     @IBAction func onRunClick(_ sender: Any) {
         setStatusWordLabel("")
-        setRapdu(text: "")
+        //setRapdu(text: "")
         translateState = false
         if self.communicationMode == .transmit {
             if self.channel == nil {
@@ -362,14 +390,14 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     @IBAction func onSlotClick(_ sender: Any) {
-        NSLog("ConnectViewController: On a cliqué sur SLOT")
         var slots = [String]()
         for slot in self.readers.slots {
             slots.append(slot)
         }
         showSlotSelectionActionSheet(slots: slots, afterConfirm: {
             guard let reader = self.readers.getReader(slot: self.selectedSlotIndex) else {
-                NSLog("gettting reader returned nil")
+                let message = "Getting reader returned nil"
+                self.log.add("Error: " + message)
                 return
             }
             
@@ -389,15 +417,14 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     @IBAction func onPowerOnOffClick(_ sender: Any) {
-        NSLog("ConnectViewController: onPowerOnOffClick")
         guard let reader = self.reader else {
             return
         }
         if self.channel != nil {
-            NSLog("On demande la déconnexion de la carte via le channel")
+            log.add("Debug: Request to disconnect from card via the channel")
             channel?.cardDisconnect()
         } else {
-            NSLog("On demande la connexion à la carte via le reader")
+            log.add("Debug: Request to connect to the card via the reader")
             reader.cardConnect()
         }
     }
@@ -419,14 +446,13 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     // **************
     
     func goBack() {
-        Utilities.hidePleaseWait(on: self)
+        //Utilities.hidePleaseWait(on: self)
         _ = navigationController?.popViewController(animated: false)
     }
     
     func showErrorAndGoBack(_ error: Error?) {
-        Utilities.hidePleaseWait(on: self)
+        //Utilities.hidePleaseWait(on: self)
         if error != nil {
-            NSLog("ConnectViewController: An error occured: \(error.debugDescription)")
             let errorCode = error?._code ?? 0
             Utilities.showOkMessageBox(on: self, message: String(errorCode) + ": " + error.debugDescription, title: "Error")
             goBack()
@@ -439,7 +465,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     // ********************
     // ********************
     func onReaderStatus(reader: SCardReader?, present: Bool?, powered: Bool?, error: Error?) {
-        NSLog("ConnectViewController:onReaderStatus()")
+        log.add("onReaderStatus()")
         if error != nil {
             showErrorAndGoBack(error)
             return
@@ -460,12 +486,12 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
         
         if self.reader != reader {
-            NSLog("ConnectViewController: Not the same reader")
+            log.add("ConnectViewController: Not the same reader")
             return
         }
         self.reader = reader
         if reader.cardPresent {
-            NSLog("ConnectViewController: CARD PRESENT")
+            log.add("ConnectViewController: CARD PRESENT")
             if !reader.cardPowered {
                 reader.cardConnect()
             } else {
@@ -473,14 +499,14 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             }
         } else {
             setIccPowerButtonLabel(IccPower.none)
-            NSLog("ConnectViewController: CARD ABSENT")
+            log.add("ConnectViewController: CARD ABSENT")
             possibleCommunicationMode = .control
         }
     }
     
     // When we are getting an answer from the card
     func onTransmitDidResponse(channel: SCardChannel?, response: [UInt8]?, error: Error?) {
-        NSLog("ConnectViewController:onTransmitDidResponse()")
+        log.add("onTransmitDidResponse()")
         if error != nil {
             showErrorAndGoBack(error)
             return
@@ -491,20 +517,19 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
         possibleCommunicationMode = .transmit
         if bytes.count <= 2 {
-            setRapdu(text: "")
+            //setRapdu(text: "")
             setStatusWordLabel(bytes)
         } else {
             let index = (bytes.count - 2)
-            let rapduBytes = Array(bytes[0..<index])
             let swBytes = (Array(bytes[index...]))
-            setRapdu(text: rapduBytes.hexa)
+            setRapdu(text: bytes.hexa)
             setStatusWordLabel(swBytes)
         }
     }
     
     // When we are getting an answer from the reader
     func onControlDidResponse(readers: SCardReaderList?, response: [UInt8]?, error: Error?) {
-        NSLog("ConnectViewController:onControlDidResponse()")
+        log.add("onControlDidResponse()")
         if error != nil {
             showErrorAndGoBack(error)
             return
@@ -518,7 +543,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func onCardDidDisconnect(channel: SCardChannel?, error: Error?) {
-        NSLog("ConnectViewController:onCardDidDisconnect()")
+        log.add("onCardDidDisconnect()")
         self.channel = nil
         self.setAtrLabel("")
         
@@ -535,7 +560,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func onCardDidConnect(channel: SCardChannel?, error: Error?) {
-        NSLog("ConnectViewController:onCardDidConnect()")
+        log.add("onCardDidConnect()")
         self.setAtrLabel("")
         if error != nil {
             setConnectionStateLabel("Error")
@@ -559,7 +584,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func onReaderListDidClose(readers: SCardReaderList?, error: Error?) {
-        NSLog("ConnectViewController:onReaderListDidClose()")
+        log.add("onReaderListDidClose()")
         self.readers = nil
         self.reader = nil
         self.channel = nil
@@ -572,7 +597,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func onReaderListDidCreate(readers: SCardReaderList?, error: Error?) {
-        NSLog("ConnectViewController:onReaderListCreated()")
+        log.add("onReaderListDidCreate()")
         Utilities.hidePleaseWait(on: self)
         if error != nil {
             showErrorAndGoBack(error)
@@ -590,7 +615,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         
         communicationMode = .control
         possibleCommunicationMode = .control
-        Utilities.showOkMessageBox(on: self, message: nil, title: "Connection is OK")
+        //Utilities.showOkMessageBox(on: self, message: nil, title: "Connection is OK")
         
         selectedSlotIndex = 0
         
@@ -622,9 +647,19 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
+    func onData(characteristicId: String, direction: String, data: [UInt8]?) {
+        if !debugExchanges {
+            return
+        }
+        let bytes = data?.hexa ?? "nil"
+        let characId = (characteristicId.count > 4) ? "..." + characteristicId.suffix(6) : characteristicId
+        setRapdu(text: direction + " " + characId + ": " + bytes)
+        log.add(direction + " " + characteristicId + ": " + bytes)
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "informationSegue" {
-            
+            log.add("Moving to information screen")
             if let readersDiscovered = self.readers {
                 let destinationViewControler = segue.destination as! InformationViewController
                 destinationViewControler.readers = readersDiscovered

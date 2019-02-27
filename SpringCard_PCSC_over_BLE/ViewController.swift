@@ -7,6 +7,38 @@ import UIKit
 import CoreBluetooth
 import SpringCard_PcSc_Like
 
+@IBDesignable extension UIButton {
+    
+    @IBInspectable var borderWidth: CGFloat {
+        set {
+            layer.borderWidth = newValue
+        }
+        get {
+            return layer.borderWidth
+        }
+    }
+    
+    @IBInspectable var cornerRadius: CGFloat {
+        set {
+            layer.cornerRadius = newValue
+        }
+        get {
+            return layer.cornerRadius
+        }
+    }
+    
+    @IBInspectable var borderColor: UIColor? {
+        set {
+            guard let uiColor = newValue else { return }
+            layer.borderColor = uiColor.cgColor
+        }
+        get {
+            guard let color = layer.borderColor else { return nil }
+            return UIColor(cgColor: color)
+        }
+    }
+}
+
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, CBCentralManagerDelegate {
 
 	public var centralManager: CBCentralManager!
@@ -15,11 +47,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 	// Variables used to store discovered peripherals and their characteristics
 	private var discoveredPeripheralsUUID: [String] = []
 	private var discoveredPeripheralsDetails: [String: (peripheral: CBPeripheral, rssi: NSNumber, AdervtisingService: [CBUUID])] = [:]
-	
+    private var log: Log!
 	@IBOutlet weak var tabelView: UITableView!
     
 	override func viewDidLoad() {
 		super.viewDidLoad()
+        self.log = Log.getInstance()
 		tabelView.dataSource = self
 		tabelView.delegate = self
 		centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -64,6 +97,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 			return
 		}
 		isScanning = true
+        log.add("Starting scanning")
 		// Get the list of devices services to filter
 		let servicesToScan:[CBUUID] = SCardReaderList.getAllAdvertisingServices()
 		centralManager.scanForPeripherals(withServices: servicesToScan, options: nil)
@@ -73,6 +107,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 		if !isScanning {
 			return
 		}
+        log.add("Stopping scanning")
 		isScanning = false
 		centralManager.stopScan()
 	}
@@ -80,10 +115,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 	func centralManagerDidUpdateState(_ central: CBCentralManager) {
 		// requires iOS10 (CBManagerState.poweredOn)
 		if central.state == CBManagerState.poweredOn {
+            log.add("Bluetooth is ok")
 			self.discoveredPeripheralsDetails = [:]
 			self.discoveredPeripheralsUUID = []
 			startScanning()
 		} else {
+            log.add("Problem with Bluetooth")
 			let alertVC = UIAlertController(title: "Bluetooth isn't working", message: "Make sure your bluetooth is on and ready", preferredStyle: .alert)
 			let okAction = UIAlertAction(title: "Ok", style: .default, handler: { (action) in
 				alertVC.dismiss(animated: true, completion: nil)
@@ -98,10 +135,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 		let deviceName = peripheral.name ?? String()
 		if !deviceName.isEmpty {
 			if !self.discoveredPeripheralsUUID.contains(peripheral.identifier.uuidString) {
+                
 				self.discoveredPeripheralsUUID.append(peripheral.identifier.uuidString)
 				let key = peripheral.identifier.uuidString
 				let value = (peripheral: peripheral, rssi: RSSI, AdervtisingService: advertisementData["kCBAdvDataServiceUUIDs"] as! [CBUUID])
 				self.discoveredPeripheralsDetails[key] = value
+                log.add("Device detected \(key)")
 			}
 		}
 		tabelView.reloadData()

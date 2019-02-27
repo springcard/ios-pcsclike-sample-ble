@@ -7,6 +7,9 @@ import Foundation
 import UIKit
 
 class Utilities {
+    
+    static var log: Log?
+    
 	static func rssiToPercentage(_ rssiLevel: Int) -> Int {
 		let rssi = Double(abs(rssiLevel))
 		if(rssi > 95 ) {
@@ -34,8 +37,12 @@ class Utilities {
 		}
 		return img
 	}
-	
-	static func showOkMessageBox(on: UIViewController, message: String?, title: String?, buttonTitle: String = "Ok") {
+    
+    // , log: Log? = nil
+    static func showOkMessageBox(on: UIViewController, message: String?, title: String?, buttonTitle: String = "Ok") {
+        if Utilities.log != nil {
+            log!.add("Utilitites: " + (title ?? "") + ": " + (message ?? ""))
+        }
 		let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
 		let okAction = UIAlertAction(title: buttonTitle, style: .default, handler: { (action) in
 			alertVC.dismiss(animated: true, completion: nil)
