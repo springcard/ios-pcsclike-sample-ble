@@ -6,9 +6,9 @@
 import Foundation
 
 enum CommunicationMode: Int {
-	case transmit,
-	control,
-    none
+	case transmit = 0,
+	control = 1,
+    none = 2
 }
 
 enum IccPower {

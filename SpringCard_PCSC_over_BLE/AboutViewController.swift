@@ -4,16 +4,21 @@
  This software is covered by the SpringCard SDK License Agreement - see LICENSE.txt
  */
 import UIKit
+import SpringCard_PcSc_Like
 
 class AboutViewController: UIViewController {
 	
 	@IBOutlet weak var webView: UIWebView!
-	
-	override func viewDidLoad() {
+    @IBOutlet weak var versionLabel: UILabel!
+    @IBOutlet weak var libraryNameLabel: UILabel!
+    @IBOutlet weak var libraryVersionLabel: UILabel!
+    @IBOutlet weak var libraryDebugLabel: UILabel!
+    
+    override func viewDidLoad() {
         super.viewDidLoad()
-		let url = URL (string: "https://www.springcard.com/en/copyright.html")
-		let request = URLRequest(url: url!);
-		webView.loadRequest(request);
+        versionLabel.text = (Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String) ?? ""
+		libraryNameLabel.text = SCardReaderList.libraryName
+		libraryVersionLabel.text = SCardReaderList.libraryVersion
+        libraryDebugLabel.text = String(SCardReaderList.libraryDebug)
     }
-
 }

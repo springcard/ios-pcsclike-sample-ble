@@ -29,15 +29,17 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     private var selectedSlotIndex = 0
     private var selectedSlotName = ""
     private var settings = Settings()
+    private var stopOnError = false
     private var log: Log!
     private var debugExchanges = true
-    
-    private var models = Models()
+    private var apduHistory = ApduHistory()
+    private var models = Models.getInstance()
+    let parser = ApduParser()
     
     //var startingTime: DispatchTime!
     //var endingTime: DispatchTime!
     
-    // Interface objects *******************************************
+    // MARK: - Interface objects
     @IBOutlet weak var deviceTitle: UINavigationItem!
     @IBOutlet weak var capdu: UITextView!
     @IBOutlet weak var transmitControlInterrupt: UISegmentedControl!
@@ -57,7 +59,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     @IBOutlet weak var responseLabel: UILabel!
     // *************************************************************
     
-    // Internal state **********************************************
+    // MARK: - Internal state
     var communicationMode: CommunicationMode = .transmit
     var possibleCommunicationMode: CommunicationMode = .transmit {
         didSet {
@@ -81,6 +83,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.stopOnError = settings.get(key: "stopOnError")
+        self.models.loadModelsAsync()
         rapdu.text = ""
         debugExchanges = settings.get(key: "debugExchanges")
         self.log = Log.getInstance()
@@ -95,6 +99,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         setRapduCapduLookAndFeel()
         addGestures()
         rapdu.text = ""
+        manageHistoryButtons()
     }
     
     private func addGestures() {
@@ -139,9 +144,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state != CBManagerState.poweredOn {
-            //Utilities.hidePleaseWait(on: self)
-            Utilities.showOkMessageBox(on: self, message: "Please activate Bluetooth", title: "Error")
-            goBack()
+            showErrorAndGoBack(message: "Please activate Bluetooth", title: "Error")
+            return
         }
     }
     
@@ -156,9 +160,9 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     
-    // ****************************************************
-    // * Manage UI fields (content, state and appearance) *
-    // ****************************************************
+    // ********************************************************
+    // MARK: Manage UI fields (content, state and appearance) *
+    // ********************************************************
     
     func setRapduCapduLookAndFeel() {
         let color = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0).cgColor
@@ -170,7 +174,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     // Remove text & label fields who have content
     func emptyTextFields() {
-        setCapduLabel(text: "")
+        setCapdu(text: "")
         connectionStatus.text = ""
         setRapdu(text: "")
         atrLabel.text = ""
@@ -186,25 +190,19 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func _setUiFromCommunication(mode: CommunicationMode) {
-        // map to mode.none
         var transmitControlInterruptIsEnabled = false
         var transmitSegmentIsEnabled = false
         var controlSegmentIsEnabled = false
-        var iccPowerButtonIsEnabled = false
         
         if mode == .control {
             transmitControlInterruptIsEnabled = true
             transmitSegmentIsEnabled = false
             controlSegmentIsEnabled = true
-            iccPowerButtonIsEnabled = false
             transmitControlInterrupt.selectedSegmentIndex = 1
-            iccPowerButton.isEnabled = iccPowerButtonIsEnabled
         } else if mode == .transmit {
             transmitControlInterruptIsEnabled = true
             transmitSegmentIsEnabled = true
             controlSegmentIsEnabled = true
-            iccPowerButtonIsEnabled = true
-            iccPowerButton.isEnabled = true
         }
         transmitControlInterrupt.isEnabled = transmitControlInterruptIsEnabled
         transmitControlInterrupt.setEnabled(transmitSegmentIsEnabled, forSegmentAt: 0)
@@ -236,11 +234,11 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
-    func setAtrLabel(_ value: String) {
+    func setAtrText(_ value: String) {
         self.atrLabel.text = value
     }
     
-    func setCapduLabel(text: String) {
+    func setCapdu(text: String) {
         self.capdu.text = text
     }
     
@@ -278,12 +276,14 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         slotButton.setTitle(label, for: .normal)
     }
     
-    /// On lui passe le statut courant pour qu'il affiche le prochain statut possible
+    // We pass the current state so that it displays the next possible status
     func setIccPowerButtonLabel(_ state: IccPower) {
         let label: String
+        iccPowerButton.isEnabled = true
         switch state {
         case .none:
-            label = ""
+            label = "none"
+            iccPowerButton.isEnabled = false
         case .off:
             label = "Connect"
         case .on:
@@ -291,19 +291,14 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         case .reconnect:
             label = "reconnect"
         }
-        //let label = (state == .off) ? "Connect" : (state == .on) ? "Disconnect" : ""
         iccPowerButton.setTitle(label, for: .normal)
     }
     
-    // ********************************************
-    // * UI Actions (buttons and segments clicks) *
-    // ********************************************
+    // ************************************************
+    // MARK: - UI Actions (buttons and segments clicks)
+    // ************************************************
     
     @IBAction func onModelsClick(_ sender: UIButton) {
-        let model = models.next()
-        setCapduLabel(text: model.apdu)
-        setRunButtonAccordingToCurrentState(requestedMode: model.type)
-        setSegmentCommunicationMode(model.type)
     }
     
     @IBAction func onTranslateClick(_ sender: Any) {
@@ -316,12 +311,45 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
+    func manageHistoryButtons() {
+        var previousButtonEnabled = true
+        var nextButtonEnabled = true
+        apduHistory.hasPreviousAndNext(hasPrevious: &previousButtonEnabled, hasNext: &nextButtonEnabled)
+        previousButton.isEnabled = previousButtonEnabled
+        nextButton.isEnabled = nextButtonEnabled
+    }
+    
+    private func setPreviousAndNextState(_ apdu: Apdu) {
+        setCapdu(text: apdu.apdu)
+        if CommunicationMode(rawValue: apdu.mode) == .control && (possibleCommunicationMode == .transmit || possibleCommunicationMode == .control) {
+            communicationMode = .control
+        } else if CommunicationMode(rawValue: apdu.mode) == .transmit && possibleCommunicationMode == .transmit {
+            communicationMode = .transmit
+        }
+        manageHistoryButtons()
+    }
+    
+    func setModel(_ apdu: Apdu?) {
+        guard let model = apdu else {
+            return
+        }
+        setCapdu(text: model.apdu)
+        setRunButtonAccordingToCurrentState(requestedMode: CommunicationMode(rawValue: model.mode)!)
+        setSegmentCommunicationMode(CommunicationMode(rawValue: model.mode)!)
+    }
+    
     @IBAction func onPreviousApduClick(_ sender: Any) {
-        // TODO
+        guard let apdu = apduHistory.previous() else {
+            return
+        }
+        setPreviousAndNextState(apdu)
     }
     
     @IBAction func onNextApduClick(_ sender: Any) {
-        // TODO
+        guard let apdu = apduHistory.next() else {
+            return
+        }
+        setPreviousAndNextState(apdu)
     }
     
     @IBAction func onCopyClick(_ sender: Any) {
@@ -336,7 +364,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     @IBAction func onRunClick(_ sender: Any) {
         setStatusWordLabel("")
-        //setRapdu(text: "")
         translateState = false
         if self.communicationMode == .transmit {
             if self.channel == nil {
@@ -349,15 +376,21 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
                 return
             }
         }
-        let parser = ApduParser(capdu.text)
-        if !parser.hasContent() {
-            Utilities.showOkMessageBox(on: self, message: "There's no content to send", title: "Warning")
+        parser.setContent(capdu.text)
+        if !parser.hasContent() || !parser.isValid {
+            Utilities.showOkMessageBox(on: self, message: "There's no content to send or the content is invalid", title: "Warning")
             return
         }
         guard let apdu = parser.getFirstLine() else {
             Utilities.showOkMessageBox(on: self, message: "ADPU is invalid", title: "Error")
             return
         }
+        runApdu(apdu: apdu)
+    }
+    
+    private func runApdu(apdu: [UInt8]) {
+        apduHistory.append(apdu: Apdu(apdu: apdu.hexa, type: self.communicationMode.rawValue))
+        manageHistoryButtons()
         if self.communicationMode == .transmit {
             self.channel?.transmit(command: apdu)
         } else {
@@ -441,29 +474,43 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
-    // **************
-    // * Misc funcs *
-    // **************
+    // ******************
+    // MARK: - Misc funcs
+    // ******************
+    func _showErrorAndGoBack(message: String, title: String = "Error") {
+        Utilities.showOkMessageBox(on: self, message: message, title: title, afterShowing: {
+            self.navigationController?.popViewController(animated: true)
+        })
+    }
     
-    func goBack() {
-        //Utilities.hidePleaseWait(on: self)
-        _ = navigationController?.popViewController(animated: false)
+    func showErrorAndGoBack(message: String, title: String) {
+        _showErrorAndGoBack(message: message, title: title)
     }
     
     func showErrorAndGoBack(_ error: Error?) {
-        //Utilities.hidePleaseWait(on: self)
-        if error != nil {
-            let errorCode = error?._code ?? 0
-            Utilities.showOkMessageBox(on: self, message: String(errorCode) + ": " + error.debugDescription, title: "Error")
-            goBack()
+        guard let error = error else {
+            return
+        }
+        let errorCode = String(error._code)
+        let errorMessage = error.localizedDescription
+        _showErrorAndGoBack(message: ("Code: \(errorCode), \(errorMessage)"), title: "Error")
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "informationSegue" {
+            if let readersDiscovered = self.readers {
+                let destinationViewControler = segue.destination as! InformationViewController
+                destinationViewControler.readers = readersDiscovered
+            }
+        } else if segue.identifier == "modelsSegue" {
+            let destinationViewControler = segue.destination as! ModelsViewController
+            destinationViewControler.connectViewController = self
         }
     }
     
-    // ********************
-    // ********************
-    // * Lib's Callbacks  *
-    // ********************
-    // ********************
+    // ***********************
+    // MARK: - Lib's Callbacks
+    // ***********************
     func onReaderStatus(reader: SCardReader?, present: Bool?, powered: Bool?, error: Error?) {
         log.add("onReaderStatus()")
         if error != nil {
@@ -472,9 +519,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
         
         guard let reader = reader else {
-            Utilities.showOkMessageBox(on: self, message: "reader is nil and error is not nil!!", title: "Error")
             readers.close()
-            goBack()
+            showErrorAndGoBack(message: "Reader is nil and error is not nil!!", title: "Error")
             return
         }
         
@@ -504,15 +550,42 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
+    func onParsingError(message: String?) {
+        if message != nil {
+        	setRapdu(text: message!)
+        }
+        if !self.parser.isParsing() {
+            return
+        }
+        if self.stopOnError {
+            self.parser.stopParsing()
+        } else {
+            guard let apdu = self.parser.getNextLine() else {
+                return
+            }
+            self.runApdu(apdu: apdu)
+        }
+    }
+    
+    func onParsingSuccess() {
+        if !self.parser.isParsing() {
+            return
+        }
+        guard let apdu = self.parser.getNextLine() else {
+            return
+        }
+        self.runApdu(apdu: apdu)
+    }
+    
     // When we are getting an answer from the card
     func onTransmitDidResponse(channel: SCardChannel?, response: [UInt8]?, error: Error?) {
         log.add("onTransmitDidResponse()")
         if error != nil {
-            showErrorAndGoBack(error)
+            onParsingError(message: error!.localizedDescription)
             return
         }
         guard let bytes = response else {
-            Utilities.showOkMessageBox(on: self, message: "Response is nil", title: "Warning")
+            onParsingError(message: "Response is nil")
             return
         }
         possibleCommunicationMode = .transmit
@@ -525,27 +598,29 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             setRapdu(text: bytes.hexa)
             setStatusWordLabel(swBytes)
         }
+        onParsingSuccess()
     }
     
     // When we are getting an answer from the reader
     func onControlDidResponse(readers: SCardReaderList?, response: [UInt8]?, error: Error?) {
         log.add("onControlDidResponse()")
         if error != nil {
-            showErrorAndGoBack(error)
+            onParsingError(message: error!.localizedDescription)
             return
         }
         guard let bytes = response else {
-            Utilities.showOkMessageBox(on: self, message: "Response is nil", title: "Warning")
+            onParsingError(message: "Response is nil")
             return
         }
         setStatusWordLabel("")
         setRapdu(text: bytes.hexa)
+        onParsingSuccess()
     }
     
     func onCardDidDisconnect(channel: SCardChannel?, error: Error?) {
         log.add("onCardDidDisconnect()")
         self.channel = nil
-        self.setAtrLabel("")
+        self.setAtrText("")
         
         if error != nil {
             showErrorAndGoBack(error)
@@ -561,7 +636,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     func onCardDidConnect(channel: SCardChannel?, error: Error?) {
         log.add("onCardDidConnect()")
-        self.setAtrLabel("")
+        self.setAtrText("")
         if error != nil {
             setConnectionStateLabel("Error")
             showErrorAndGoBack(error)
@@ -578,7 +653,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         setRunButtonAccordingToCurrentState(requestedMode: .transmit)
         self.channel = channel
         setConnectionStateLabel("Card powered")
-        self.setAtrLabel(channel.atr.hexa)
+        self.setAtrText(channel.atr.hexa)
         self.setTransmitAndControlUi()
         setIccPowerButtonLabel(IccPower.on)
     }
@@ -593,7 +668,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             return
         }
         possibleCommunicationMode = .none
-        //goBack()
     }
     
     func onReaderListDidCreate(readers: SCardReaderList?, error: Error?) {
@@ -605,32 +679,28 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
         
         guard let readers = readers else {
-            Utilities.showOkMessageBox(on: self, message: "readers is nil!", title: "Error")
-            goBack()
+            showErrorAndGoBack(message: "Readers is nil!", title: "Error")
             return
         }
-        infoButton.isEnabled = true
+        
         self.readers = readers
+        infoButton.isEnabled = true
         setConnectionStateLabel("Connected")
         
         communicationMode = .control
         possibleCommunicationMode = .control
-        //Utilities.showOkMessageBox(on: self, message: nil, title: "Connection is OK")
-        
         selectedSlotIndex = 0
         
         guard let reader = readers.getReader(slot: selectedSlotIndex) else {
-            Utilities.showOkMessageBox(on: self, message: "Asking for reader 0 returned nil", title: "Error")
-            goBack()
+            showErrorAndGoBack(message: "Asking for reader 0 returned nil", title: "Error")
             return
         }
         
         self.reader = reader
         selectedSlotName = readers.slots[selectedSlotIndex]
-        
-        self.setSegmentCommunicationMode(CommunicationMode.transmit)
-        if (self.reader?.cardPresent)! {
-            self.reader?.cardConnect()
+
+        if reader.cardPresent {
+            reader.cardConnect()
         }
         
         setSlotsButtonState()
@@ -647,6 +717,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
+    // TODO, remove
     func onData(characteristicId: String, direction: String, data: [UInt8]?) {
         if !debugExchanges {
             return
@@ -657,13 +728,4 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         log.add(direction + " " + characteristicId + ": " + bytes)
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "informationSegue" {
-            log.add("Moving to information screen")
-            if let readersDiscovered = self.readers {
-                let destinationViewControler = segue.destination as! InformationViewController
-                destinationViewControler.readers = readersDiscovered
-            }
-        }
-    }
 }

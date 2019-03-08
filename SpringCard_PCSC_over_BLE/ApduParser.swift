@@ -4,24 +4,35 @@
  This software is covered by the SpringCard SDK License Agreement - see LICENSE.txt
  */
 import Foundation
+
 class ApduParser {
     private var rawContent = ""
     private var linesCount = 0
     private var _isParsing = false
     private var currentPosition = -1
+    private var _isValid = true
     var parsedLines: [String] = []
     
-    func setContent(_ content: String) -> Bool {
+    var isValid: Bool {
+        return _isValid
+    }
+    
+    func setContent(_ content: String) {
         rawContent = content
+        linesCount = 0
         _isParsing = false
         currentPosition = -1
+        parsedLines = []
+        _isValid = true
         rawContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
         if rawContent.isEmpty {
-            return false
+            _isValid = false
+            return
         }
         let lines = rawContent.components(separatedBy: "\n")
         if lines.isEmpty {
-            return false
+            _isValid = false
+            return
         }
         parsedLines = []
         for line in lines {
@@ -30,17 +41,16 @@ class ApduParser {
                 linesCount += 1
             }
         }
-        return true
     }
     
     init() {}
     
     init(_ content: String) {
-        _ = setContent(content)
+        setContent(content)
     }
     
     func getLinescount() -> Int {
-        return self.linesCount
+        return linesCount
     }
     
     func getFirstLine() -> [UInt8]? {

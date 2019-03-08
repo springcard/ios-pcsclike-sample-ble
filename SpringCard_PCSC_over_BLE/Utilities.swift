@@ -38,14 +38,20 @@ class Utilities {
 		return img
 	}
     
-    // , log: Log? = nil
-    static func showOkMessageBox(on: UIViewController, message: String?, title: String?, buttonTitle: String = "Ok") {
+    static func showOkMessageBox(on: UIViewController, message: String?, title: String?, afterShowing: (() -> ())? = nil) {
+        Utilities.showOkMessageBox(on: on, message: message, title: title, buttonTitle: "Ok", afterShowing: afterShowing)
+    }
+    
+    static func showOkMessageBox(on: UIViewController, message: String?, title: String?, buttonTitle: String = "Ok", afterShowing: (() -> ())? = nil) {
         if Utilities.log != nil {
             log!.add("Utilitites: " + (title ?? "") + ": " + (message ?? ""))
         }
 		let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
 		let okAction = UIAlertAction(title: buttonTitle, style: .default, handler: { (action) in
 			alertVC.dismiss(animated: true, completion: nil)
+            if let action = afterShowing {
+                action()
+            }
 		})
 		alertVC.addAction(okAction)
 		on.present(alertVC, animated: true);
