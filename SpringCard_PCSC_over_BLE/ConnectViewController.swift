@@ -75,6 +75,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     private var isConnected = false
+    private var iccPowerButtonIsEnabled = true
     
     // Used to "translate" (hex string to ASCII) RAPDU ********
     var translateState: Bool = false
@@ -298,6 +299,38 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     // MARK: - UI Actions (buttons and segments clicks)
     // ************************************************
     
+    func disableUI() {
+        capdu.isUserInteractionEnabled = false
+        transmitControlInterrupt.isEnabled = false
+        rapdu.isUserInteractionEnabled = false
+		modelsButton.isEnabled = false
+        translateButton.isEnabled = false
+        nextButton.isEnabled = false
+        previousButton.isEnabled = false
+        runButton.isEnabled = false
+        copyButton.isEnabled = false
+        iccPowerButtonIsEnabled = iccPowerButton.isEnabled
+        iccPowerButton.isEnabled = false
+        slotButton.isEnabled = false
+        infoButton.isEnabled = false
+        responseLabel.isUserInteractionEnabled = false
+    }
+    
+    func enableUI() {
+        capdu.isUserInteractionEnabled = true
+        transmitControlInterrupt.isEnabled = true
+        rapdu.isUserInteractionEnabled = true
+        modelsButton.isEnabled = true
+        translateButton.isEnabled = true
+        manageHistoryButtons()
+        runButton.isEnabled = true
+        copyButton.isEnabled = true
+        iccPowerButton.isEnabled = iccPowerButtonIsEnabled 
+        setSlotsButtonState()
+        infoButton.isEnabled = true
+        responseLabel.isUserInteractionEnabled = true
+    }
+    
     @IBAction func onModelsClick(_ sender: UIButton) {
     }
     
@@ -385,6 +418,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             Utilities.showOkMessageBox(on: self, message: "ADPU is invalid", title: "Error")
             return
         }
+        disableUI()
         runApdu(apdu: apdu)
     }
     
@@ -558,6 +592,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             return
         }
         if self.stopOnError {
+            enableUI()
             self.parser.stopParsing()
         } else {
             guard let apdu = self.parser.getNextLine() else {
@@ -569,9 +604,11 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     func onParsingSuccess() {
         if !self.parser.isParsing() {
+            enableUI()
             return
         }
         guard let apdu = self.parser.getNextLine() else {
+            enableUI()
             return
         }
         self.runApdu(apdu: apdu)
@@ -717,7 +754,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
-    // TODO, remove
+    // Temporary
     func onData(characteristicId: String, direction: String, data: [UInt8]?) {
         if !debugExchanges {
             return

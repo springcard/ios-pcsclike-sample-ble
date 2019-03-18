@@ -211,6 +211,20 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F9T-VR-DGv">
+                                <rect key="frame" x="79" y="426" width="162" height="21"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="www.springcard.com">
+                                        <attributes>
+                                            <color key="NSColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" metaFont="system" size="17"/>
+                                            <url key="NSLink" string="http://www.springcard.com"/>
+                                            <integer key="NSUnderline" value="1"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -224,7 +238,9 @@
                             <constraint firstItem="FH1-EC-xlS" firstAttribute="top" secondItem="tVG-Jh-A6K" secondAttribute="top" constant="6" id="LQq-b8-AHZ"/>
                             <constraint firstItem="r7B-Sf-pRx" firstAttribute="centerX" secondItem="oKR-R6-qzE" secondAttribute="centerX" id="NZe-zc-hnA"/>
                             <constraint firstItem="tLL-J8-FMS" firstAttribute="centerX" secondItem="oKR-R6-qzE" secondAttribute="centerX" id="NcW-iI-DjI"/>
+                            <constraint firstItem="F9T-VR-DGv" firstAttribute="centerX" secondItem="oKR-R6-qzE" secondAttribute="centerX" id="OIz-s7-QSX"/>
                             <constraint firstItem="uSF-fY-uce" firstAttribute="top" secondItem="mhF-qJ-jBD" secondAttribute="bottom" constant="8" id="P5X-sv-90T"/>
+                            <constraint firstItem="F9T-VR-DGv" firstAttribute="top" secondItem="uSF-fY-uce" secondAttribute="bottom" constant="12" id="QRA-0g-kp0"/>
                             <constraint firstItem="tVG-Jh-A6K" firstAttribute="trailing" secondItem="aPU-4U-pCK" secondAttribute="trailing" multiplier="1.2" constant="4" id="Uol-4P-G0k"/>
                             <constraint firstItem="HZR-Ow-5Ch" firstAttribute="top" secondItem="ier-ii-AdI" secondAttribute="bottom" constant="8" id="VmC-uw-1of"/>
                             <constraint firstItem="tVG-Jh-A6K" firstAttribute="trailing" secondItem="HZR-Ow-5Ch" secondAttribute="trailing" multiplier="1.2" constant="4" id="dXO-6B-SfV"/>
@@ -250,6 +266,7 @@
                         <outlet property="libraryDebugLabel" destination="aPU-4U-pCK" id="c3a-K0-OKh"/>
                         <outlet property="libraryNameLabel" destination="HZR-Ow-5Ch" id="Cfr-rZ-qz4"/>
                         <outlet property="libraryVersionLabel" destination="Ppo-lE-uYC" id="An3-sY-pHU"/>
+                        <outlet property="springcardLinkLabel" destination="F9T-VR-DGv" id="gxY-bD-EwX"/>
                         <outlet property="versionLabel" destination="UE0-Dp-llH" id="oY6-i6-LhL"/>
                     </connections>
                 </viewController>
