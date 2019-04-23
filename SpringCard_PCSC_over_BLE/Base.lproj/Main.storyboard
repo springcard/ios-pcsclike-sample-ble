@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="j28-qh-vhG">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="j28-qh-vhG">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -705,16 +705,6 @@
                                     <action selector="onRunClick:" destination="hMd-Kc-s3q" eventType="touchUpInside" id="tgu-98-QfB"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MHI-9k-wGw">
-                                <rect key="frame" x="178" y="272" width="22" height="22"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="22" id="eut-VL-ReM"/>
-                                    <constraint firstAttribute="height" constant="22" id="yfp-LK-LLw"/>
-                                </constraints>
-                                <connections>
-                                    <segue destination="d0Y-4y-1vE" kind="show" identifier="informationSegue" id="1xg-kj-z9q"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sJ2-Kc-6T6">
                                 <rect key="frame" x="93.5" y="293" width="71" height="30"/>
                                 <constraints>
@@ -737,6 +727,24 @@
                                     <action selector="onTranslateClick:" destination="hMd-Kc-s3q" eventType="touchUpInside" id="HyA-69-Ppf"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rd1-Ph-8FH">
+                                <rect key="frame" x="213" y="70" width="30" height="30"/>
+                                <state key="normal" title="⋮"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <integer key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="stateButtonClick:" destination="hMd-Kc-s3q" eventType="touchUpInside" id="s52-ey-yDo"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -745,8 +753,6 @@
                             <constraint firstItem="pM6-v1-vs9" firstAttribute="leading" secondItem="Xyf-hi-lYK" secondAttribute="trailing" constant="4" id="1db-YW-2J6"/>
                             <constraint firstItem="Kyx-80-xjS" firstAttribute="top" secondItem="vcd-vQ-Lr6" secondAttribute="top" constant="42" id="2TX-x0-P77"/>
                             <constraint firstItem="vcd-vQ-Lr6" firstAttribute="trailing" secondItem="pM6-v1-vs9" secondAttribute="trailing" constant="5" id="37p-Xf-9Tb"/>
-                            <constraint firstItem="qaP-ga-SUA" firstAttribute="leading" secondItem="MHI-9k-wGw" secondAttribute="trailing" constant="9" id="BSA-rv-6jd"/>
-                            <constraint firstItem="MHI-9k-wGw" firstAttribute="top" secondItem="3kG-b7-5fx" secondAttribute="bottom" constant="11" id="D6h-CZ-0rx"/>
                             <constraint firstItem="vcd-vQ-Lr6" firstAttribute="bottom" secondItem="NgP-aZ-6TJ" secondAttribute="bottom" constant="5" id="FTe-WF-vED"/>
                             <constraint firstItem="In2-sk-9EQ" firstAttribute="top" secondItem="ork-NS-0oW" secondAttribute="bottom" constant="5" id="KIR-6T-otN"/>
                             <constraint firstItem="vcd-vQ-Lr6" firstAttribute="bottom" secondItem="zUh-1k-mWv" secondAttribute="bottom" constant="5" id="KiC-4z-zow"/>
@@ -754,6 +760,7 @@
                             <constraint firstItem="qaP-ga-SUA" firstAttribute="top" secondItem="3kG-b7-5fx" secondAttribute="bottom" constant="7" id="Nnh-CU-5En"/>
                             <constraint firstItem="jPW-6f-bIt" firstAttribute="top" secondItem="3kG-b7-5fx" secondAttribute="bottom" constant="12" id="Oft-kC-Nru"/>
                             <constraint firstItem="gpQ-MD-LyS" firstAttribute="leading" secondItem="vcd-vQ-Lr6" secondAttribute="leading" constant="5" id="P6R-NS-Wrv"/>
+                            <constraint firstItem="Rd1-Ph-8FH" firstAttribute="top" secondItem="vcd-vQ-Lr6" secondAttribute="top" constant="6" id="Q1J-4z-o3O"/>
                             <constraint firstItem="Xyf-hi-lYK" firstAttribute="top" secondItem="vcd-vQ-Lr6" secondAttribute="top" constant="6" id="Rz3-Aw-up2"/>
                             <constraint firstItem="3kG-b7-5fx" firstAttribute="top" secondItem="Kyx-80-xjS" secondAttribute="bottom" constant="8" id="SKd-fa-BMq"/>
                             <constraint firstItem="vcd-vQ-Lr6" firstAttribute="trailing" secondItem="zUh-1k-mWv" secondAttribute="trailing" constant="5" id="WcE-Ea-mRC"/>
@@ -766,6 +773,7 @@
                             <constraint firstItem="vcd-vQ-Lr6" firstAttribute="trailing" secondItem="Kyx-80-xjS" secondAttribute="trailing" constant="5" id="f85-h9-ewk"/>
                             <constraint firstItem="3kG-b7-5fx" firstAttribute="leading" secondItem="vcd-vQ-Lr6" secondAttribute="leading" constant="5" id="fPt-Ji-qP5"/>
                             <constraint firstItem="ewS-DZ-PeG" firstAttribute="top" secondItem="vcd-vQ-Lr6" secondAttribute="top" constant="6" id="fZ8-lE-6gf"/>
+                            <constraint firstItem="Xyf-hi-lYK" firstAttribute="leading" secondItem="Rd1-Ph-8FH" secondAttribute="trailing" constant="4" id="k0d-7S-mwr"/>
                             <constraint firstItem="ork-NS-0oW" firstAttribute="top" secondItem="hQ2-pC-sgo" secondAttribute="bottom" constant="8" id="l9o-Lx-Hhi"/>
                             <constraint firstItem="vcd-vQ-Lr6" firstAttribute="trailing" secondItem="G8o-P9-skb" secondAttribute="trailing" constant="5" id="ldY-w3-49N"/>
                             <constraint firstItem="vcd-vQ-Lr6" firstAttribute="bottom" secondItem="ylB-1h-iGc" secondAttribute="bottom" constant="11" id="ltD-XH-CJe"/>
@@ -794,7 +802,6 @@
                         <outlet property="copyButton" destination="qaP-ga-SUA" id="mNg-Qc-W2Q"/>
                         <outlet property="deviceTitle" destination="Tx3-LU-rcN" id="aUu-iD-X41"/>
                         <outlet property="iccPowerButton" destination="zUh-1k-mWv" id="egF-j9-dSW"/>
-                        <outlet property="infoButton" destination="MHI-9k-wGw" id="1Ur-8O-Yhf"/>
                         <outlet property="modelsButton" destination="ewS-DZ-PeG" id="GBb-CP-W5h"/>
                         <outlet property="nextButton" destination="pM6-v1-vs9" id="zoT-1I-9SJ"/>
                         <outlet property="previousButton" destination="Xyf-hi-lYK" id="5zr-t6-Mt1"/>
@@ -802,9 +809,11 @@
                         <outlet property="responseLabel" destination="ork-NS-0oW" id="R4K-Y6-tiL"/>
                         <outlet property="runButton" destination="9Py-F3-5wE" id="U3H-B3-nut"/>
                         <outlet property="slotButton" destination="NgP-aZ-6TJ" id="QiD-Hh-F0I"/>
+                        <outlet property="stateButton" destination="Rd1-Ph-8FH" id="DaT-PQ-aJ9"/>
                         <outlet property="statusWordLabel" destination="jPW-6f-bIt" id="tNa-D9-zWR"/>
                         <outlet property="translateButton" destination="sJ2-Kc-6T6" id="Udm-hn-5Pj"/>
                         <outlet property="transmitControlInterrupt" destination="gpQ-MD-LyS" id="mak-wc-40T"/>
+                        <segue destination="d0Y-4y-1vE" kind="show" identifier="informationSegue" id="EBx-Dk-7Kb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oL5-ER-JUk" userLabel="First Responder" sceneMemberID="firstResponder"/>

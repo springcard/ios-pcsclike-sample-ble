@@ -19,15 +19,14 @@ extension Collection where Element == Byte {
 }
 
 class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate, SCardReaderListDelegate {
-    
     public var device: CBPeripheral?
     public var advertisingServices: [CBUUID] = []
     public var centralManager: CBCentralManager!
     private var readers: SCardReaderList!
     private var reader: SCardReader?
     private var channel: SCardChannel?
-    private var selectedSlotIndex = 0
-    private var selectedSlotName = ""
+    private var selectedActionIndex = 0
+    private var selectedActionName = ""
     private var settings = Settings()
     private var stopOnError = false
     private var log: Log!
@@ -35,7 +34,10 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     private var apduHistory = ApduHistory()
     private var models = Models.getInstance()
     let parser = ApduParser()
-    
+    private let WAKEUP = "Wake up"
+    private let SHUTDOWN = "Shutdown"
+    private let GET_BATTERY_LEVEL = "Get battery level"
+    private let INFO = "Info."
     //var startingTime: DispatchTime!
     //var endingTime: DispatchTime!
     
@@ -55,11 +57,12 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     @IBOutlet weak var copyButton: UIButton!
     @IBOutlet weak var iccPowerButton: UIButton!
     @IBOutlet weak var slotButton: UIButton!
-    @IBOutlet weak var infoButton: UIButton!
     @IBOutlet weak var responseLabel: UILabel!
+    @IBOutlet weak var stateButton: UIButton!
     // *************************************************************
     
     // MARK: - Internal state
+    var isSleeping = false
     var communicationMode: CommunicationMode = .transmit
     var possibleCommunicationMode: CommunicationMode = .transmit {
         didSet {
@@ -90,12 +93,11 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         debugExchanges = settings.get(key: "debugExchanges")
         self.log = Log.getInstance()
         Utilities.log = self.log
-        infoButton.isEnabled = false
         Utilities.showPleaseWait(on: self)
         centralManager.delegate = self
         self.centralManager.connect(self.device!)
         emptyTextFields()
-        deviceTitle.title = device?.name ?? "no device name"
+        setDeviceTitle()
         setConnectionStateLabel("Connecting")
         setRapduCapduLookAndFeel()
         addGestures()
@@ -295,6 +297,12 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         iccPowerButton.setTitle(label, for: .normal)
     }
     
+    func setDeviceTitle(_ isSleeping: Bool = false) {
+        let sleep = isSleeping ? " (Zz)" : ""
+        let deviceName = device?.name ?? "no device name"
+        deviceTitle.title = deviceName + sleep
+    }
+    
     // ************************************************
     // MARK: - UI Actions (buttons and segments clicks)
     // ************************************************
@@ -312,7 +320,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         iccPowerButtonIsEnabled = iccPowerButton.isEnabled
         iccPowerButton.isEnabled = false
         slotButton.isEnabled = false
-        infoButton.isEnabled = false
         responseLabel.isUserInteractionEnabled = false
     }
     
@@ -327,8 +334,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         copyButton.isEnabled = true
         iccPowerButton.isEnabled = iccPowerButtonIsEnabled 
         setSlotsButtonState()
-        infoButton.isEnabled = true
         responseLabel.isUserInteractionEnabled = true
+        runButton.shake()
     }
     
     @IBAction func onModelsClick(_ sender: UIButton) {
@@ -432,28 +439,29 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
-    func showSlotSelectionActionSheet(slots: [String], afterConfirm: (() -> ())? = nil) {
-        let slotsMenu = UIAlertController(title: "Select slot:", message: nil, preferredStyle: .actionSheet)
-        slotsMenu.modalPresentationStyle = .popover
+    // TODO
+    func showActionSheet(title: String, sourceView: UIButton, elements: [String], afterConfirm: (() -> ())? = nil) {
+        let actionsMenu = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+        actionsMenu.modalPresentationStyle = .popover
         
-        for (index, slot) in slots.enumerated() {
-            let slotAction = UIAlertAction(title: slot, style: .default, handler: { action in
+        for (index, element) in elements.enumerated() {
+            let elementAction = UIAlertAction(title: element, style: .default, handler: { action in
                 if let action = afterConfirm {
-                    self.selectedSlotName = slot
-                    self.selectedSlotIndex = index
+                    self.selectedActionName = element
+                    self.selectedActionIndex = index
                     action()
                 }
             })
-            slotsMenu.addAction(slotAction)
+            actionsMenu.addAction(elementAction)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        slotsMenu.addAction(cancelAction)
+        actionsMenu.addAction(cancelAction)
         
-        if let presenter = slotsMenu.popoverPresentationController {
-            presenter.sourceView = slotButton
-            presenter.sourceRect = slotButton.bounds
+        if let presenter = actionsMenu.popoverPresentationController {
+            presenter.sourceView = sourceView
+            presenter.sourceRect = sourceView.bounds
         }
-        self.present(slotsMenu, animated: true, completion: nil)
+        self.present(actionsMenu, animated: true, completion: nil)
     }
     
     @IBAction func onSlotClick(_ sender: Any) {
@@ -461,15 +469,15 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         for slot in self.readers.slots {
             slots.append(slot)
         }
-        showSlotSelectionActionSheet(slots: slots, afterConfirm: {
-            guard let reader = self.readers.getReader(slot: self.selectedSlotIndex) else {
+        showActionSheet(title: "Select slot:", sourceView: slotButton, elements: slots, afterConfirm: {
+            guard let reader = self.readers.getReader(slot: self.selectedActionIndex) else {
                 let message = "Getting reader returned nil"
                 self.log.add("Error: " + message)
                 return
             }
             
             self.reader = reader
-            self.setSlotbuttonLabel(self.selectedSlotName)
+            self.setSlotbuttonLabel(self.selectedActionName)
             
             if reader.cardPresent {
                 if !reader.cardPowered {
@@ -480,6 +488,32 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             } else {
                 self.setIccPowerButtonLabel(IccPower.none)
             }
+        })
+    }
+    
+    @IBAction func stateButtonClick(_ sender: UIButton) {
+        var actions = [String]()
+        actions.append(self.isSleeping ?  self.WAKEUP : self.SHUTDOWN)
+        actions.append(self.INFO)
+        actions.append(self.GET_BATTERY_LEVEL)
+        showActionSheet(title: "Select action:", sourceView: stateButton, elements: actions, afterConfirm: {
+            guard let readers = self.readers else {
+                return
+            }
+            switch (self.selectedActionName) {
+            case self.WAKEUP:
+            	readers.wakeUp()
+            case self.SHUTDOWN:
+                readers.shutdown()
+            case self.INFO:
+            	self.performSegue(withIdentifier: "informationSegue", sender: self)
+            case self.GET_BATTERY_LEVEL:
+                self.readers.getPowerInfo()
+            default:
+                return
+            }
+            self.selectedActionName = ""
+            self.selectedActionIndex = -1
         })
     }
     
@@ -721,27 +755,26 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
         
         self.readers = readers
-        infoButton.isEnabled = true
         setConnectionStateLabel("Connected")
         
         communicationMode = .control
         possibleCommunicationMode = .control
-        selectedSlotIndex = 0
+        selectedActionIndex = 0
         
-        guard let reader = readers.getReader(slot: selectedSlotIndex) else {
+        guard let reader = readers.getReader(slot: selectedActionIndex) else {
             showErrorAndGoBack(message: "Asking for reader 0 returned nil", title: "Error")
             return
         }
         
         self.reader = reader
-        selectedSlotName = readers.slots[selectedSlotIndex]
+        selectedActionName = readers.slots[selectedActionIndex]
 
         if reader.cardPresent {
             reader.cardConnect()
         }
         
         setSlotsButtonState()
-        setSlotbuttonLabel(selectedSlotName)
+        setSlotbuttonLabel(selectedActionName)
         
         if reader.cardPresent {
             if reader.cardPowered {
@@ -764,5 +797,38 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         setRapdu(text: direction + " " + characId + ": " + bytes)
         log.add(direction + " " + characteristicId + ": " + bytes)
     }
-
+    
+    func onReaderListState(readers: SCardReaderList, isInLowPowerMode: Bool) {
+        log.add("onReaderListState()")
+        self.isSleeping = isInLowPowerMode
+        if isInLowPowerMode {
+            print("LE LECTEUR PART EN VEILLE")
+            disableUI()
+            setDeviceTitle(true)
+        } else {
+            print("LE LECTEUR SE REVEILLE")
+            enableUI()
+            setDeviceTitle()
+        }
+    }
+    
+    func onPowerInfo(powerState: Int?, batteryLevel: Int?, error: Error? ) {
+        log.add("onPowerInfo()")
+        if error != nil {
+            showErrorAndGoBack(error)
+            return
+        }
+        guard let powerState = powerState else {
+            log.add("Error, powerState is nil")
+            return
+        }
+        guard let batteryLevel = batteryLevel else {
+            log.add("Error, batteryLevel is nil")
+            return
+        }
+        let message = "Power state: \(powerState), Battery Level: \(batteryLevel)"
+        Utilities.showOkMessageBox(on: self, message: message, title: "Battery level", afterShowing: {
+            ()
+        })
+    }
 }

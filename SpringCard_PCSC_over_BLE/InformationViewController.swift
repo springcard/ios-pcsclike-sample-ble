@@ -21,6 +21,9 @@ class InformationViewController: UIViewController, UITableViewDataSource, UITabl
     
     func loadReadersInformation() {
         readersData.removeAll()
+        guard let readers = self.readers else {
+            return
+        }
         readersData.append(("Vendor Name", readers.vendorName))
         readersData.append(("Product Name", readers.productName))
         readersData.append(("Serial Number", readers.serialNumber))
@@ -28,7 +31,9 @@ class InformationViewController: UIViewController, UITableViewDataSource, UITabl
         readersData.append(("Hardware Version", readers.hardwareVersion))
         readersData.append(("Software Version", readers.softwareVersion))
         readersData.append(("Pnp Id", readers.pnpId))
+        readersData.append(("Tx Power Level", String(readers.powerLevel)))
         readersData.append(("Battery Level", String(readers.batteryLevel)))
+        readersData.append(("Power State", String(readers.powerState)))
         readersData.append(("Slot Count", String(self.readers.slotCount)))
 
         if self.readers.slotCount > 0 {

@@ -62,8 +62,8 @@ class Models {
         _models.append(Apdu(apdu: "589F", type: 1))  // Wink
  */
         _models.append(Apdu(apdu: "582002", type: 1))  // Product's name
-        //_models.append(Apdu(apdu: "582001", type: 1))  // Vendor's name
-        //_models.append(Apdu(apdu: "FF CA 00 00 00", type: 0))  // Get UID
+        _models.append(Apdu(apdu: "582001", type: 1))  // Vendor's name
+        _models.append(Apdu(apdu: "FF CA 00 00 00", type: 0))  // Get UID
     }
     
     func loadModelsAsync() {
