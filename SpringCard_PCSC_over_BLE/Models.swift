@@ -85,7 +85,6 @@ class Models {
                 DispatchQueue.main.async {
                     self._models.removeAll()
                     self._models = modelsData
-                    //print(modelsData[1])
                 }
             } catch let jsonError {
                 self.log.add("Error with received Json from the REST server")

@@ -38,8 +38,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     private let SHUTDOWN = "Shutdown"
     private let GET_BATTERY_LEVEL = "Get battery level"
     private let INFO = "Info."
-    //var startingTime: DispatchTime!
-    //var endingTime: DispatchTime!
     
     // MARK: - Interface objects
     @IBOutlet weak var deviceTitle: UINavigationItem!
@@ -103,6 +101,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         addGestures()
         rapdu.text = ""
         manageHistoryButtons()
+        capdu.text = "FFFD0080FF" // TODO suppimer
     }
     
     private func addGestures() {
@@ -142,7 +141,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         isConnected = true
         //startingTime = DispatchTime.now()
         let secureParameters = getSecureConnectionParameters()
-        SCardReaderList.create(peripheral: self.device!, centralManager: self.centralManager, advertisingServices: self.advertisingServices, delegate: self, secureConnectionParameters: secureParameters)
+        //SCardReaderList.create(peripheral: self.device!, centralManager: self.centralManager, advertisingServices: self.advertisingServices, delegate: self, secureConnectionParameters: secureParameters)
+        SCardReaderList.create(peripheral: self.device!, centralManager: self.centralManager, delegate: self, secureConnectionParameters: secureParameters)
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -439,7 +439,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
-    // TODO
     func showActionSheet(title: String, sourceView: UIButton, elements: [String], afterConfirm: (() -> ())? = nil) {
         let actionsMenu = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
         actionsMenu.modalPresentationStyle = .popover
@@ -586,6 +585,14 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             return
         }
         
+        // TODO virer
+        if reader != nil {
+            print("reader.index: " + String(reader?.index ?? -1))
+            print("reader.name: " + (reader?.name ?? ""))
+            print("present: " + (present?.description ?? "nil"))
+            print("powered: " + (powered?.description ?? "nil"))
+        }
+        
         guard let reader = reader else {
             readers.close()
             showErrorAndGoBack(message: "Reader is nil and error is not nil!!", title: "Error")
@@ -690,6 +697,16 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     func onCardDidDisconnect(channel: SCardChannel?, error: Error?) {
         log.add("onCardDidDisconnect()")
+        // TODO, virer
+    	if channel == nil {
+            print("LE CHANNEL EST NIL")
+        } else {
+            print("LE CHANNEL N'EST PAS NIL, Id et Name:")
+            print(channel?.parent.index ?? -1)
+            print(channel?.parent.name ?? "unknown")
+        }
+        
+
         self.channel = nil
         self.setAtrText("")
         
@@ -718,6 +735,12 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             Utilities.showOkMessageBox(on: self, message: "Channel is nil!", title: "Error")
             return
         }
+        
+        // TODO VIRER
+        print("slot index et name")
+        print(channel.parent.index)
+        print(channel.parent.name)
+        print(channel.atr.hexa)
         
         self.channel = channel
         possibleCommunicationMode = .transmit
@@ -789,6 +812,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     // Temporary
     func onData(characteristicId: String, direction: String, data: [UInt8]?) {
+        log.add("onData()")
         if !debugExchanges {
             return
         }
