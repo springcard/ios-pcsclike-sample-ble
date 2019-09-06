@@ -82,9 +82,12 @@ class Models {
             }
             do {
                 let modelsData = try JSONDecoder().decode([Apdu].self, from: data)
+                let newArray = modelsData.sorted { (lhs: Apdu, rhs: Apdu) -> Bool in
+                return lhs.title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() < rhs.title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            }
                 DispatchQueue.main.async {
                     self._models.removeAll()
-                    self._models = modelsData
+                    self._models = newArray
                 }
             } catch let jsonError {
                 self.log.add("Error with received Json from the REST server")

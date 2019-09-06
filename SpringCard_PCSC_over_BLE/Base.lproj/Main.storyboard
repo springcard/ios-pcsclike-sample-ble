@@ -436,18 +436,6 @@
                                     <action selector="debugSecureCommunicationSwitchClick:" destination="y74-hW-Wvg" eventType="valueChanged" id="naf-SF-LDx"/>
                                 </connections>
                             </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Debug exchanges" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jWF-fC-I3Q">
-                                <rect key="frame" x="10" y="341" width="138" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jZR-b3-9nx">
-                                <rect key="frame" x="261" y="341" width="51" height="31"/>
-                                <connections>
-                                    <action selector="debugExchangesClick:" destination="y74-hW-Wvg" eventType="valueChanged" id="ofp-Bi-ATW"/>
-                                </connections>
-                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -461,17 +449,14 @@
                             <constraint firstItem="kvJ-Ll-edy" firstAttribute="top" secondItem="tql-b6-aNr" secondAttribute="bottom" constant="18" id="6Zf-sQ-rc7"/>
                             <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="E8q-24-4e4" secondAttribute="trailing" constant="10" id="74P-8O-7TY"/>
                             <constraint firstItem="ybD-tM-9OA" firstAttribute="top" secondItem="uJR-AZ-kAR" secondAttribute="bottom" constant="8" id="D59-np-GmZ"/>
-                            <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="jZR-b3-9nx" secondAttribute="trailing" constant="10" id="FFE-Oy-Qgp"/>
                             <constraint firstItem="qRE-aK-puL" firstAttribute="leading" secondItem="1bD-EG-ZPh" secondAttribute="leading" constant="10" id="Jg3-UK-05k"/>
                             <constraint firstItem="mhm-dU-Tc3" firstAttribute="top" secondItem="1bD-EG-ZPh" secondAttribute="top" constant="5" id="TC0-4a-GJU"/>
-                            <constraint firstItem="jWF-fC-I3Q" firstAttribute="top" secondItem="qRE-aK-puL" secondAttribute="bottom" constant="15" id="VO3-Ib-v8I"/>
                             <constraint firstItem="WOS-Ts-IQN" firstAttribute="top" secondItem="vp1-px-kOk" secondAttribute="bottom" constant="18" id="WK3-cl-eFx"/>
                             <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="ybD-tM-9OA" secondAttribute="trailing" constant="10" id="bw9-PF-a85"/>
                             <constraint firstItem="Hhu-ld-8VV" firstAttribute="top" secondItem="WOS-Ts-IQN" secondAttribute="bottom" constant="24" id="cHV-ee-TXj"/>
                             <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="VFV-D2-86P" secondAttribute="trailing" constant="10" id="cjL-T7-yjI"/>
                             <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="uJR-AZ-kAR" secondAttribute="trailing" constant="10" id="dKB-yv-yJT"/>
                             <constraint firstItem="tql-b6-aNr" firstAttribute="top" secondItem="Hhu-ld-8VV" secondAttribute="bottom" constant="8" id="dST-De-ra2"/>
-                            <constraint firstItem="jWF-fC-I3Q" firstAttribute="leading" secondItem="1bD-EG-ZPh" secondAttribute="leading" constant="10" id="dUd-iq-P3N"/>
                             <constraint firstItem="vp1-px-kOk" firstAttribute="top" secondItem="mhm-dU-Tc3" secondAttribute="bottom" constant="18" id="jUF-RC-eYP"/>
                             <constraint firstItem="VFV-D2-86P" firstAttribute="top" secondItem="tP2-D6-GFd" secondAttribute="bottom" constant="10" id="kbt-z0-N2X"/>
                             <constraint firstItem="uJR-AZ-kAR" firstAttribute="top" secondItem="1bD-EG-ZPh" secondAttribute="top" constant="5" id="nGB-p5-lQj"/>
@@ -479,12 +464,10 @@
                             <constraint firstItem="tql-b6-aNr" firstAttribute="leading" secondItem="1bD-EG-ZPh" secondAttribute="leading" constant="5" id="tcy-6f-qgu"/>
                             <constraint firstItem="tP2-D6-GFd" firstAttribute="top" secondItem="tql-b6-aNr" secondAttribute="bottom" constant="11" id="uHe-9q-Y1T"/>
                             <constraint firstItem="qRE-aK-puL" firstAttribute="top" secondItem="kvJ-Ll-edy" secondAttribute="bottom" constant="15" id="xsP-Um-keJ"/>
-                            <constraint firstItem="jZR-b3-9nx" firstAttribute="top" secondItem="VFV-D2-86P" secondAttribute="bottom" constant="10" id="yt2-F7-ZgT"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="1bD-EG-ZPh"/>
                     </view>
                     <connections>
-                        <outlet property="debugExchangesSwitch" destination="jZR-b3-9nx" id="8k5-70-xHl"/>
                         <outlet property="debugModeSwitch" destination="uJR-AZ-kAR" id="ahh-dK-X4y"/>
                         <outlet property="debugSecureCommunicationLabel" destination="qRE-aK-puL" id="zFG-MF-tH3"/>
                         <outlet property="debugSecureCommunicationSwitch" destination="VFV-D2-86P" id="Wsh-Td-7EP"/>

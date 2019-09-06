@@ -15,7 +15,6 @@ class SettingsController: UIViewController, UITextFieldDelegate {
     private var keyIndex: Int = 0
     private var settings = Settings()
     private var debugSecureCommunication = true
-    private var debugExchanges = true
     
     @IBOutlet weak var debugModeSwitch: UISwitch!
     @IBOutlet weak var stopOnErrorSwitch: UISwitch!
@@ -24,7 +23,6 @@ class SettingsController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var secureKeyText: UITextField!
     @IBOutlet weak var keyIndexSegmentControl: UISegmentedControl!
     @IBOutlet weak var keyIndexLabel: UILabel!
-    @IBOutlet weak var debugExchangesSwitch: UISwitch!
     
     @IBOutlet weak var debugSecureCommunicationLabel: UILabel!
     @IBOutlet weak var debugSecureCommunicationSwitch: UISwitch!
@@ -53,7 +51,6 @@ class SettingsController: UIViewController, UITextFieldDelegate {
         secureKey = settings.get(key: "secureKey")
         keyIndex = settings.get(key: "keyIndex")
         debugSecureCommunication = settings.get(key: "debugSecureCommunication")
-        debugExchanges = settings.get(key: "debugExchanges")
     }
     
     func setUIState() {
@@ -61,7 +58,6 @@ class SettingsController: UIViewController, UITextFieldDelegate {
         debugModeSwitch.setOn(debugMode, animated: animated)
         stopOnErrorSwitch.setOn(stopOnError, animated: animated)
         useSecureCommunicationSwitch.setOn(useSecureCommunication, animated: animated)
-        debugExchangesSwitch.setOn(debugExchanges, animated: animated)
         secureKeyText.text = secureKey
         
         debugSecureCommunicationLabel.isEnabled = useSecureCommunication
@@ -82,13 +78,6 @@ class SettingsController: UIViewController, UITextFieldDelegate {
     @IBAction func debugModeSwitchClick(_ sender: UISwitch) {
         debugMode = sender.isOn
         settings.set(key: "activateDebugMode", debugMode)
-        setUIState()
-    }
-    
-    
-    @IBAction func debugExchangesClick(_ sender: UISwitch) {
-        debugExchanges = sender.isOn
-        settings.set(key: "debugExchanges", debugExchanges)
         setUIState()
     }
     

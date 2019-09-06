@@ -27,7 +27,9 @@ class Log {
             return
         }
         if self.withNsLog {
+            #if DEBUG
             NSLog(line)
+            #endif
         }
         self.debugLines.append(line)
     }

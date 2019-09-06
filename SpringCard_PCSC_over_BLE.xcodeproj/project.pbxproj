@@ -222,10 +222,9 @@
 			};
 			buildConfigurationList = BD339D211F053B73005F9DE4 /* Build configuration list for PBXProject "SpringCard_PCSC_over_BLE" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);

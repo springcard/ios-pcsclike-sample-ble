@@ -108,8 +108,12 @@ class Utilities {
         on.present(alert, animated: true, completion: nil)
     }
     
-    static func hidePleaseWait(on: UIViewController) {
-        on.dismiss(animated: false, completion: nil)
+    static func hidePleaseWait(on: UIViewController, afterHide: (() -> ())? = nil) {
+        on.dismiss(animated: false, completion: {
+            if let action = afterHide {
+                action()
+            }
+        })
     }
     
     static func isASCIIChar(b: UInt8) -> Bool {

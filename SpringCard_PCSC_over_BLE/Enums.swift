@@ -16,4 +16,5 @@ enum IccPower {
     case on
     case off
     case reconnect
+    case error
 }

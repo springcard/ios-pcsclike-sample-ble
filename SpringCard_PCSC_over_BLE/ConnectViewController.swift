@@ -25,12 +25,13 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     private var readers: SCardReaderList!
     private var reader: SCardReader?
     private var channel: SCardChannel?
+    private var channels: [Int: SCardChannel] = [:]
     private var selectedActionIndex = 0
+    private var selectedReaderIndex = 0
     private var selectedActionName = ""
     private var settings = Settings()
     private var stopOnError = false
     private var log: Log!
-    private var debugExchanges = true
     private var apduHistory = ApduHistory()
     private var models = Models.getInstance()
     let parser = ApduParser()
@@ -38,6 +39,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     private let SHUTDOWN = "Shutdown"
     private let GET_BATTERY_LEVEL = "Get battery level"
     private let INFO = "Info."
+    private var didHidePleaseWait = false
     
     // MARK: - Interface objects
     @IBOutlet weak var deviceTitle: UINavigationItem!
@@ -62,18 +64,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     // MARK: - Internal state
     var isSleeping = false
     var communicationMode: CommunicationMode = .transmit
-    var possibleCommunicationMode: CommunicationMode = .transmit {
-        didSet {
-            switch possibleCommunicationMode {
-            case .control:
-                setControlUiOnly()
-            case .transmit:
-                setTransmitAndControlUi()
-            case .none:
-                disableCommunicationUi()
-            }
-        }
-    }
     
     private var isConnected = false
     private var iccPowerButtonIsEnabled = true
@@ -88,7 +78,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         self.stopOnError = settings.get(key: "stopOnError")
         self.models.loadModelsAsync()
         rapdu.text = ""
-        debugExchanges = settings.get(key: "debugExchanges")
         self.log = Log.getInstance()
         Utilities.log = self.log
         Utilities.showPleaseWait(on: self)
@@ -101,7 +90,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         addGestures()
         rapdu.text = ""
         manageHistoryButtons()
-        capdu.text = "FFFD0080FF" // TODO suppimer
+        capdu.text = ""
     }
     
     private func addGestures() {
@@ -120,7 +109,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     @objc func tapOnResponseLabel(sender:UITapGestureRecognizer) {
         rapdu.text = ""
     }
-
+    
     private func getSecureConnectionParameters() -> SecureConnectionParameters? {
         if !settings.get(key: "useSecureCommunication") {
             return nil
@@ -130,7 +119,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
         
         let keyIndexFromSettings: Int = settings.get(key: "keyIndex")
-        guard let keyIndex: KeyIndex = KeyIndex(rawValue: UInt8(keyIndexFromSettings + 1)) else {
+        guard let keyIndex: KeyIndex = KeyIndex(rawValue: UInt8(keyIndexFromSettings)) else {
             return nil
         }
         let debugCommunication: Bool = settings.get(key: "debugSecureCommunication")
@@ -139,9 +128,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         isConnected = true
-        //startingTime = DispatchTime.now()
         let secureParameters = getSecureConnectionParameters()
-        //SCardReaderList.create(peripheral: self.device!, centralManager: self.centralManager, advertisingServices: self.advertisingServices, delegate: self, secureConnectionParameters: secureParameters)
         SCardReaderList.create(peripheral: self.device!, centralManager: self.centralManager, delegate: self, secureConnectionParameters: secureParameters)
     }
     
@@ -192,51 +179,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         setStatusWordLabel(bytes.hexa)
     }
     
-    func _setUiFromCommunication(mode: CommunicationMode) {
-        var transmitControlInterruptIsEnabled = false
-        var transmitSegmentIsEnabled = false
-        var controlSegmentIsEnabled = false
-        
-        if mode == .control {
-            transmitControlInterruptIsEnabled = true
-            transmitSegmentIsEnabled = false
-            controlSegmentIsEnabled = true
-            transmitControlInterrupt.selectedSegmentIndex = 1
-        } else if mode == .transmit {
-            transmitControlInterruptIsEnabled = true
-            transmitSegmentIsEnabled = true
-            controlSegmentIsEnabled = true
-        }
-        transmitControlInterrupt.isEnabled = transmitControlInterruptIsEnabled
-        transmitControlInterrupt.setEnabled(transmitSegmentIsEnabled, forSegmentAt: 0)
-        transmitControlInterrupt.setEnabled(controlSegmentIsEnabled, forSegmentAt: 1)
-    }
-    
-    // When there's no card but we are connected to the reader
-    func setControlUiOnly() {
-        _setUiFromCommunication(mode: .control)
-    }
-    
-    // When a card is connected (and powered)
-    func setTransmitAndControlUi() {
-        _setUiFromCommunication(mode: .transmit)
-    }
-    
-    // Should not happen
-    func disableCommunicationUi() {
-        _setUiFromCommunication(mode: .none)
-    }
-    
-    func setRunButtonAccordingToCurrentState(requestedMode: CommunicationMode) {
-        runButton.isEnabled = true
-        if requestedMode == .transmit && possibleCommunicationMode == .control {
-            runButton.isEnabled = false
-        }
-        if possibleCommunicationMode == .none {
-            runButton.isEnabled = false
-        }
-    }
-    
     func setAtrText(_ value: String) {
         self.atrLabel.text = value
     }
@@ -254,9 +196,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func setSegmentCommunicationMode(_ communicationMode: CommunicationMode) {
-        if self.possibleCommunicationMode == .control && communicationMode == .transmit {
-            return
-        }
         self.communicationMode = communicationMode
         if self.communicationMode == .control {
             transmitControlInterrupt.selectedSegmentIndex = 1
@@ -285,7 +224,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         iccPowerButton.isEnabled = true
         switch state {
         case .none:
-            label = "none"
+            label = "no card"
             iccPowerButton.isEnabled = false
         case .off:
             label = "Connect"
@@ -293,6 +232,8 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             label = "Disconnect"
         case .reconnect:
             label = "reconnect"
+        case .error:
+            label = "Error"
         }
         iccPowerButton.setTitle(label, for: .normal)
     }
@@ -311,7 +252,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         capdu.isUserInteractionEnabled = false
         transmitControlInterrupt.isEnabled = false
         rapdu.isUserInteractionEnabled = false
-		modelsButton.isEnabled = false
+        modelsButton.isEnabled = false
         translateButton.isEnabled = false
         nextButton.isEnabled = false
         previousButton.isEnabled = false
@@ -361,9 +302,9 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     private func setPreviousAndNextState(_ apdu: Apdu) {
         setCapdu(text: apdu.apdu)
-        if CommunicationMode(rawValue: apdu.mode) == .control && (possibleCommunicationMode == .transmit || possibleCommunicationMode == .control) {
+        if CommunicationMode(rawValue: apdu.mode) == .control {
             communicationMode = .control
-        } else if CommunicationMode(rawValue: apdu.mode) == .transmit && possibleCommunicationMode == .transmit {
+        } else if CommunicationMode(rawValue: apdu.mode) == .transmit {
             communicationMode = .transmit
         }
         manageHistoryButtons()
@@ -374,7 +315,6 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             return
         }
         setCapdu(text: model.apdu)
-        setRunButtonAccordingToCurrentState(requestedMode: CommunicationMode(rawValue: model.mode)!)
         setSegmentCommunicationMode(CommunicationMode(rawValue: model.mode)!)
     }
     
@@ -407,7 +347,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         translateState = false
         if self.communicationMode == .transmit {
             if self.channel == nil {
-                Utilities.showOkMessageBox(on: self, message: "Channel is nil", title: "Error")
+                Utilities.showOkMessageBox(on: self, message: "Channel is nil, card may be mute", title: "Error")
                 return
             }
         } else {
@@ -433,9 +373,19 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         apduHistory.append(apdu: Apdu(apdu: apdu.hexa, type: self.communicationMode.rawValue))
         manageHistoryButtons()
         if self.communicationMode == .transmit {
-            self.channel?.transmit(command: apdu)
+            guard let channel = self.channels[self.selectedReaderIndex] else {
+                showErrorAndGoBack(message: "No channel for this reader, card may be mute", title: "Error")
+                return
+            }
+            self.channel = channel
+            channel.transmit(command: apdu)
         } else {
-            self.reader?.control(command: apdu)
+            guard let reader = self.readers[self.selectedReaderIndex] else {
+                showErrorAndGoBack(message: "Can't find the selected reader", title: "Error")
+                return
+            }
+            self.reader = reader
+            reader.control(command: apdu)
         }
     }
     
@@ -470,20 +420,18 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
         showActionSheet(title: "Select slot:", sourceView: slotButton, elements: slots, afterConfirm: {
             guard let reader = self.readers.getReader(slot: self.selectedActionIndex) else {
-                let message = "Getting reader returned nil"
-                self.log.add("Error: " + message)
+                self.log.add("Error, getting reader returned nil")
                 return
             }
-            
+            self.selectedReaderIndex = self.selectedActionIndex
             self.reader = reader
+            if self.channels[reader.index] != nil {
+                self.channel = self.channels[reader.index]
+            }
             self.setSlotbuttonLabel(self.selectedActionName)
             
             if reader.cardPresent {
-                if !reader.cardPowered {
-                    reader.cardConnect()
-                } else {
-                    self.setIccPowerButtonLabel(IccPower.on)
-                }
+                reader.cardConnect()
             } else {
                 self.setIccPowerButtonLabel(IccPower.none)
             }
@@ -501,11 +449,11 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             }
             switch (self.selectedActionName) {
             case self.WAKEUP:
-            	readers.wakeUp()
+                readers.wakeUp()
             case self.SHUTDOWN:
                 readers.shutdown()
             case self.INFO:
-            	self.performSegue(withIdentifier: "informationSegue", sender: self)
+                self.performSegue(withIdentifier: "informationSegue", sender: self)
             case self.GET_BATTERY_LEVEL:
                 self.readers.getPowerInfo()
             default:
@@ -521,20 +469,15 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             return
         }
         if self.channel != nil {
-            log.add("Debug: Request to disconnect from card via the channel")
             channel?.cardDisconnect()
         } else {
-            log.add("Debug: Request to connect to the card via the reader")
             reader.cardConnect()
         }
     }
     
     @IBAction func onCommunicationModeChange(_ sender: Any) {
-        let segmentTitle = Utilities.getSegmentedControlLabel(self.transmitControlInterrupt)
-        if segmentTitle == nil {
-            return
-        }
-        if segmentTitle!.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == "transmit" {
+        let segmentIndex = self.transmitControlInterrupt.selectedSegmentIndex
+        if segmentIndex == 0 {
             self.communicationMode = .transmit
         } else {
             self.communicationMode = .control
@@ -585,34 +528,18 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             return
         }
         
-        // TODO virer
-        if reader != nil {
-            print("reader.index: " + String(reader?.index ?? -1))
-            print("reader.name: " + (reader?.name ?? ""))
-            print("present: " + (present?.description ?? "nil"))
-            print("powered: " + (powered?.description ?? "nil"))
-        }
-        
         guard let reader = reader else {
             readers.close()
             showErrorAndGoBack(message: "Reader is nil and error is not nil!!", title: "Error")
             return
         }
         
-        possibleCommunicationMode = .control
-        if present != nil && powered != nil {
-            if (present! && powered!) && reader == self.reader {
-                possibleCommunicationMode = .transmit
-            }
-        }
-        
         if self.reader != reader {
-            log.add("ConnectViewController: Not the same reader")
             return
         }
         self.reader = reader
         if reader.cardPresent {
-            log.add("ConnectViewController: CARD PRESENT")
+            log.add("ConnectViewController: card present")
             if !reader.cardPowered {
                 reader.cardConnect()
             } else {
@@ -620,14 +547,13 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             }
         } else {
             setIccPowerButtonLabel(IccPower.none)
-            log.add("ConnectViewController: CARD ABSENT")
-            possibleCommunicationMode = .control
+            log.add("ConnectViewController: card absent")
         }
     }
     
     func onParsingError(message: String?) {
         if message != nil {
-        	setRapdu(text: message!)
+            setRapdu(text: message!)
         }
         if !self.parser.isParsing() {
             return
@@ -659,14 +585,15 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     func onTransmitDidResponse(channel: SCardChannel?, response: [UInt8]?, error: Error?) {
         log.add("onTransmitDidResponse()")
         if error != nil {
+            log.add("There was an error during transmit: " + String(error?._code ?? -1) + ": " + (error?.localizedDescription ?? "no error message"))
             onParsingError(message: error!.localizedDescription)
             return
         }
         guard let bytes = response else {
+            log.add("Response is nil")
             onParsingError(message: "Response is nil")
             return
         }
-        possibleCommunicationMode = .transmit
         if bytes.count <= 2 {
             //setRapdu(text: "")
             setStatusWordLabel(bytes)
@@ -686,10 +613,12 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             onParsingError(message: error!.localizedDescription)
             return
         }
+        
         guard let bytes = response else {
             onParsingError(message: "Response is nil")
             return
         }
+        
         setStatusWordLabel("")
         setRapdu(text: bytes.hexa)
         onParsingSuccess()
@@ -697,36 +626,31 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     
     func onCardDidDisconnect(channel: SCardChannel?, error: Error?) {
         log.add("onCardDidDisconnect()")
-        // TODO, virer
-    	if channel == nil {
-            print("LE CHANNEL EST NIL")
-        } else {
-            print("LE CHANNEL N'EST PAS NIL, Id et Name:")
-            print(channel?.parent.index ?? -1)
-            print(channel?.parent.name ?? "unknown")
-        }
-        
-
-        self.channel = nil
-        self.setAtrText("")
-        
         if error != nil {
             showErrorAndGoBack(error)
             return
         }
         
-        communicationMode = .control
-        possibleCommunicationMode = .control
-        setRunButtonAccordingToCurrentState(requestedMode: .control)
-        setConnectionStateLabel("Card disconnected")
-        setIccPowerButtonLabel(IccPower.reconnect)
+        if channel != nil {
+            log.add("Channel index: " + String(channel?.parent.index ?? -1))
+            log.add("Channel name: " + (channel?.parent.name ?? "unknown"))
+            let channelIndex = channel?.parent.index ?? -1
+            if channelIndex >= 0 {
+                self.channels.removeValue(forKey: (channel?.parent.index)!)
+                if self.selectedReaderIndex == self.channel?.parent.index {
+                    self.setAtrText("")
+                    self.channel = nil
+                    setIccPowerButtonLabel(IccPower.reconnect)
+                }
+            }
+        }
     }
     
     func onCardDidConnect(channel: SCardChannel?, error: Error?) {
         log.add("onCardDidConnect()")
         self.setAtrText("")
         if error != nil {
-            setConnectionStateLabel("Error")
+            setIccPowerButtonLabel(.error)
             showErrorAndGoBack(error)
             return
         }
@@ -736,20 +660,24 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             return
         }
         
-        // TODO VIRER
-        print("slot index et name")
-        print(channel.parent.index)
-        print(channel.parent.name)
-        print(channel.atr.hexa)
+        let channelParentIndex: Int = channel.parent.index
+        self.channels[channelParentIndex] = channel
+        if channelParentIndex == self.selectedReaderIndex {
+            self.channel = channel
+        }
         
         self.channel = channel
-        possibleCommunicationMode = .transmit
-        setRunButtonAccordingToCurrentState(requestedMode: .transmit)
         self.channel = channel
-        setConnectionStateLabel("Card powered")
         self.setAtrText(channel.atr.hexa)
-        self.setTransmitAndControlUi()
         setIccPowerButtonLabel(IccPower.on)
+    }
+    
+    private func onReaderListDidCloseNext(_ error: Error?) {
+        if error != nil {
+            showErrorAndGoBack(error)
+        } else {
+            showErrorAndGoBack(message: "Communication closed", title: "disconnection")
+        }
     }
     
     func onReaderListDidClose(readers: SCardReaderList?, error: Error?) {
@@ -757,16 +685,22 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         self.readers = nil
         self.reader = nil
         self.channel = nil
-        if error != nil {
-            showErrorAndGoBack(error)
-            return
+
+        if !didHidePleaseWait {
+            Utilities.hidePleaseWait(on: self, afterHide: {
+            	self.didHidePleaseWait = true
+                self.onReaderListDidCloseNext(error)
+            })
+        } else {
+            onReaderListDidCloseNext(error)
         }
-        possibleCommunicationMode = .none
     }
     
+    // The reader object is created correctly or there is an error
     func onReaderListDidCreate(readers: SCardReaderList?, error: Error?) {
         log.add("onReaderListDidCreate()")
         Utilities.hidePleaseWait(on: self)
+        didHidePleaseWait = true
         if error != nil {
             showErrorAndGoBack(error)
             return
@@ -781,17 +715,17 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         setConnectionStateLabel("Connected")
         
         communicationMode = .control
-        possibleCommunicationMode = .control
         selectedActionIndex = 0
+        selectedReaderIndex = 0
         
-        guard let reader = readers.getReader(slot: selectedActionIndex) else {
+        guard let reader = readers.getReader(slot: selectedReaderIndex) else {
             showErrorAndGoBack(message: "Asking for reader 0 returned nil", title: "Error")
             return
         }
         
         self.reader = reader
-        selectedActionName = readers.slots[selectedActionIndex]
-
+        selectedActionName = readers.slots[selectedReaderIndex]
+        
         if reader.cardPresent {
             reader.cardConnect()
         }
@@ -810,46 +744,39 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         }
     }
     
-    // Temporary
-    func onData(characteristicId: String, direction: String, data: [UInt8]?) {
-        log.add("onData()")
-        if !debugExchanges {
-            return
-        }
-        let bytes = data?.hexa ?? "nil"
-        let characId = (characteristicId.count > 4) ? "..." + characteristicId.suffix(6) : characteristicId
-        setRapdu(text: direction + " " + characId + ": " + bytes)
-        log.add(direction + " " + characteristicId + ": " + bytes)
-    }
-    
+    // When the reader wake up or go to sleep
     func onReaderListState(readers: SCardReaderList, isInLowPowerMode: Bool) {
         log.add("onReaderListState()")
         self.isSleeping = isInLowPowerMode
         if isInLowPowerMode {
-            print("LE LECTEUR PART EN VEILLE")
+            log.add("The reader is going to sleep")
             disableUI()
             setDeviceTitle(true)
         } else {
-            print("LE LECTEUR SE REVEILLE")
+            log.add("The reader is waking up")
             enableUI()
             setDeviceTitle()
         }
     }
     
+    // When we get battery info
     func onPowerInfo(powerState: Int?, batteryLevel: Int?, error: Error? ) {
         log.add("onPowerInfo()")
         if error != nil {
             showErrorAndGoBack(error)
             return
         }
+        
         guard let powerState = powerState else {
-            log.add("Error, powerState is nil")
+            showErrorAndGoBack(message: "Error, powerState is nil", title: "Error")
             return
         }
+        
         guard let batteryLevel = batteryLevel else {
-            log.add("Error, batteryLevel is nil")
+            showErrorAndGoBack(message: "Error, batteryLevel is nil", title: "Error")
             return
         }
+        
         let message = "Power state: \(powerState), Battery Level: \(batteryLevel)"
         Utilities.showOkMessageBox(on: self, message: message, title: "Battery level", afterShowing: {
             ()
