@@ -15,6 +15,7 @@ class SettingsController: UIViewController, UITextFieldDelegate {
     private var keyIndex: Int = 0
     private var settings = Settings()
     private var debugSecureCommunication = true
+    private var measureTimeExecution = false
     
     @IBOutlet weak var debugModeSwitch: UISwitch!
     @IBOutlet weak var stopOnErrorSwitch: UISwitch!
@@ -26,6 +27,7 @@ class SettingsController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var debugSecureCommunicationLabel: UILabel!
     @IBOutlet weak var debugSecureCommunicationSwitch: UISwitch!
+    @IBOutlet weak var measureTimeSwitch: UISwitch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,12 +53,14 @@ class SettingsController: UIViewController, UITextFieldDelegate {
         secureKey = settings.get(key: "secureKey")
         keyIndex = settings.get(key: "keyIndex")
         debugSecureCommunication = settings.get(key: "debugSecureCommunication")
+        measureTimeExecution = settings.get(key: "measureTimeExecution")
     }
     
     func setUIState() {
         let animated = true
         debugModeSwitch.setOn(debugMode, animated: animated)
         stopOnErrorSwitch.setOn(stopOnError, animated: animated)
+        measureTimeSwitch.setOn(measureTimeExecution, animated: animated)
         useSecureCommunicationSwitch.setOn(useSecureCommunication, animated: animated)
         secureKeyText.text = secureKey
         
@@ -78,6 +82,13 @@ class SettingsController: UIViewController, UITextFieldDelegate {
     @IBAction func debugModeSwitchClick(_ sender: UISwitch) {
         debugMode = sender.isOn
         settings.set(key: "activateDebugMode", debugMode)
+        setUIState()
+    }
+    
+    
+    @IBAction func measureTimeExecutionSwitchClick(_ sender: UISwitch) {
+        measureTimeExecution = sender.isOn
+        settings.set(key: "measureTimeExecution", measureTimeExecution)
         setUIState()
     }
     

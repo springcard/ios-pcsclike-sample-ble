@@ -31,6 +31,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     private var selectedActionName = ""
     private var settings = Settings()
     private var stopOnError = false
+    private var measureTimeExecution = false
     private var log: Log!
     private var apduHistory = ApduHistory()
     private var models = Models.getInstance()
@@ -40,6 +41,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     private let GET_BATTERY_LEVEL = "Get battery level"
     private let INFO = "Info."
     private var didHidePleaseWait = false
+    private var startingPoint = Date()
     
     // MARK: - Interface objects
     @IBOutlet weak var deviceTitle: UINavigationItem!
@@ -76,6 +78,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     override func viewDidLoad() {
         super.viewDidLoad()
         self.stopOnError = settings.get(key: "stopOnError")
+        self.measureTimeExecution = settings.get(key: "measureTimeExecution")
         self.models.loadModelsAsync()
         rapdu.text = ""
         self.log = Log.getInstance()
@@ -265,6 +268,9 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
     }
     
     func enableUI() {
+        if (self.measureTimeExecution) {
+            showExecutionTime()
+        }
         capdu.isUserInteractionEnabled = true
         transmitControlInterrupt.isEnabled = true
         rapdu.isUserInteractionEnabled = true
@@ -365,6 +371,7 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             Utilities.showOkMessageBox(on: self, message: "ADPU is invalid", title: "Error")
             return
         }
+        self.startingPoint = Date()
         disableUI()
         runApdu(apdu: apdu)
     }
@@ -387,6 +394,19 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
             self.reader = reader
             reader.control(command: apdu)
         }
+    }
+    
+    func showExecutionTime() {
+        let elaspedTime = NSString(format: "%.4f", startingPoint.timeIntervalSinceNow * -1)
+        let alertController = UIAlertController(title: (elaspedTime as String) + " sec.", message: nil, preferredStyle:.alert)
+        alertController.modalPresentationStyle = .popover
+        if let presenter = alertController.popoverPresentationController {
+            presenter.sourceView = self.runButton
+            presenter.sourceRect = self.runButton.bounds
+        }
+        self.present(alertController, animated: true, completion: {Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: {_ in
+            self.dismiss(animated: true, completion: nil)
+        })})
     }
     
     func showActionSheet(title: String, sourceView: UIButton, elements: [String], afterConfirm: (() -> ())? = nil) {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="j28-qh-vhG">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="j28-qh-vhG">
     <device id="retina4_0" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -426,6 +426,18 @@
                                     <action selector="debugSecureCommunicationSwitchClick:" destination="y74-hW-Wvg" eventType="valueChanged" id="naf-SF-LDx"/>
                                 </connections>
                             </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Measure time execution" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SlU-hc-2I0">
+                                <rect key="frame" x="10" y="321" width="182" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cW5-Hr-CB8">
+                                <rect key="frame" x="261" y="319" width="51" height="31"/>
+                                <connections>
+                                    <action selector="measureTimeExecutionSwitchClick:" destination="y74-hW-Wvg" eventType="valueChanged" id="lZf-Uc-Jvr"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -438,7 +450,9 @@
                             <constraint firstItem="Hhu-ld-8VV" firstAttribute="centerX" secondItem="9yo-Rr-H3b" secondAttribute="centerX" id="609-KT-jTZ"/>
                             <constraint firstItem="kvJ-Ll-edy" firstAttribute="top" secondItem="tql-b6-aNr" secondAttribute="bottom" constant="18" id="6Zf-sQ-rc7"/>
                             <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="E8q-24-4e4" secondAttribute="trailing" constant="10" id="74P-8O-7TY"/>
+                            <constraint firstItem="SlU-hc-2I0" firstAttribute="top" secondItem="qRE-aK-puL" secondAttribute="bottom" constant="15" id="7PO-j7-Dyu"/>
                             <constraint firstItem="ybD-tM-9OA" firstAttribute="top" secondItem="uJR-AZ-kAR" secondAttribute="bottom" constant="8" id="D59-np-GmZ"/>
+                            <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="cW5-Hr-CB8" secondAttribute="trailing" constant="10" id="Ifs-lt-d3t"/>
                             <constraint firstItem="qRE-aK-puL" firstAttribute="leading" secondItem="1bD-EG-ZPh" secondAttribute="leading" constant="10" id="Jg3-UK-05k"/>
                             <constraint firstItem="mhm-dU-Tc3" firstAttribute="top" secondItem="1bD-EG-ZPh" secondAttribute="top" constant="5" id="TC0-4a-GJU"/>
                             <constraint firstItem="WOS-Ts-IQN" firstAttribute="top" secondItem="vp1-px-kOk" secondAttribute="bottom" constant="18" id="WK3-cl-eFx"/>
@@ -447,6 +461,8 @@
                             <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="VFV-D2-86P" secondAttribute="trailing" constant="10" id="cjL-T7-yjI"/>
                             <constraint firstItem="1bD-EG-ZPh" firstAttribute="trailing" secondItem="uJR-AZ-kAR" secondAttribute="trailing" constant="10" id="dKB-yv-yJT"/>
                             <constraint firstItem="tql-b6-aNr" firstAttribute="top" secondItem="Hhu-ld-8VV" secondAttribute="bottom" constant="8" id="dST-De-ra2"/>
+                            <constraint firstItem="cW5-Hr-CB8" firstAttribute="top" secondItem="VFV-D2-86P" secondAttribute="bottom" constant="8" id="g3P-b7-eHH"/>
+                            <constraint firstItem="SlU-hc-2I0" firstAttribute="leading" secondItem="1bD-EG-ZPh" secondAttribute="leading" constant="10" id="is6-8A-G9T"/>
                             <constraint firstItem="vp1-px-kOk" firstAttribute="top" secondItem="mhm-dU-Tc3" secondAttribute="bottom" constant="18" id="jUF-RC-eYP"/>
                             <constraint firstItem="VFV-D2-86P" firstAttribute="top" secondItem="tP2-D6-GFd" secondAttribute="bottom" constant="10" id="kbt-z0-N2X"/>
                             <constraint firstItem="uJR-AZ-kAR" firstAttribute="top" secondItem="1bD-EG-ZPh" secondAttribute="top" constant="5" id="nGB-p5-lQj"/>
@@ -463,6 +479,7 @@
                         <outlet property="debugSecureCommunicationSwitch" destination="VFV-D2-86P" id="Wsh-Td-7EP"/>
                         <outlet property="keyIndexLabel" destination="kvJ-Ll-edy" id="IiG-YS-T5P"/>
                         <outlet property="keyIndexSegmentControl" destination="tP2-D6-GFd" id="4IO-e7-uzG"/>
+                        <outlet property="measureTimeSwitch" destination="cW5-Hr-CB8" id="W65-i0-bbb"/>
                         <outlet property="secureKeyLabel" destination="Hhu-ld-8VV" id="HR6-6Q-6fD"/>
                         <outlet property="secureKeyText" destination="tql-b6-aNr" id="C6H-P8-lz1"/>
                         <outlet property="stopOnErrorSwitch" destination="ybD-tM-9OA" id="Pl3-32-H7D"/>
