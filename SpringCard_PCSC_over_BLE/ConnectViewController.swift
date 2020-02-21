@@ -671,7 +671,19 @@ class ConnectViewController: UIViewController, CBCentralManagerDelegate, CBPerip
         self.setAtrText("")
         if error != nil {
             setIccPowerButtonLabel(.error)
-            showErrorAndGoBack(error)
+            if (self.readers == nil) {
+                Utilities.showOkMessageBox(on: self, message: "Error while connecting to the card", title: "Error")
+                return
+            }
+            if (self.readers.slotError == 0xFE && self.readers.slotStatus == 0x41) {
+                Utilities.showOkMessageBox(on: self, message: "Card Mute, please eject it and insert it.", title: "Warning")
+                if (!self.stopOnError) {
+                    return
+                }
+            }
+            if (self.stopOnError) {
+                showErrorAndGoBack(error)
+            }
             return
         }
         
